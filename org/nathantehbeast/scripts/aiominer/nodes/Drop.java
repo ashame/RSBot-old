@@ -7,11 +7,13 @@ import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.methods.widget.ChatOptions;
 import org.powerbot.game.api.util.Filter;
+import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.node.Item;
 import sk.action.ActionBar;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,6 +39,7 @@ public final class Drop extends Node {
     @Override
     public void execute() {
         final List<Item> toDrop = new ArrayList<>();
+        final Timer t = new Timer(10000);
         if (!ActionBar.isOpen()) {
             ActionBar.makeReady();
             Utilities.waitFor(new Condition() {
@@ -55,19 +58,9 @@ public final class Drop extends Node {
                 }
             }, 3000);
         }
-        for (final Item item : Inventory.getItems(new Filter<Item>() {
-            @Override
-            public boolean accept(Item item) {
-                return item.getId() == Main.getOre().id;
-            }
-        })) {
+        while (t.isRunning() && Inventory.contains(Main.getOre().id)) {
             ActionBar.getNode(0).send();
-            Utilities.waitFor(new Condition() {
-                @Override
-                public boolean validate() {
-                    return item == null;
-                }
-            }, 250);
+            sleep(80, 100);
         }
         for (Item item : Inventory.getItems(FILTER)) {
             if (!toDrop.contains(item)) {

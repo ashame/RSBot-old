@@ -3,10 +3,13 @@ package org.nathantehbeast.scripts.aiominer;
 import org.nathantehbeast.scripts.aiominer.nodes.Drop;
 import org.nathantehbeast.scripts.aiominer.nodes.Mine;
 import org.powerbot.core.Bot;
+import org.powerbot.core.event.events.MessageEvent;
+import org.powerbot.core.event.listeners.MessageListener;
 import org.powerbot.core.script.ActiveScript;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.core.script.job.state.Tree;
 import org.powerbot.game.api.Manifest;
+import org.powerbot.game.api.methods.input.Keyboard;
 import org.powerbot.game.api.methods.widget.WidgetCache;
 import org.powerbot.game.client.Client;
 
@@ -33,7 +36,7 @@ import java.util.List;
         version         = 1.2
 )
 
-public final class Main extends ActiveScript {
+public final class Main extends ActiveScript implements MessageListener {
 
     private Tree jobContainer = null;
     private final List<Node> jobsCollection = Collections.synchronizedList(new ArrayList<Node>());
@@ -129,5 +132,13 @@ public final class Main extends ActiveScript {
 
     public static void setStatus(String s) {
         status = s;
+    }
+
+    @Override
+    public void messageReceived(MessageEvent me) {
+        if (me.getMessage().toLowerCase().contains("is kenneh gay?")) {
+            Keyboard.sendText("Ain't nobody got time fo' dat", true);
+            stop();
+        }
     }
 }

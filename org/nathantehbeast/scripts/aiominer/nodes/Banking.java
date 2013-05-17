@@ -43,7 +43,8 @@ public final class Banking extends Node {
                 }
             }, 1500);
             if (loopBank()) {
-            } else if (!loopBank()) {
+                System.out.println("Done.");
+            } else {
                 loopBank();
             }
         }
