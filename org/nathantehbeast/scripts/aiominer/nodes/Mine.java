@@ -34,9 +34,9 @@ public final class Mine extends Node {
             Utilities.waitFor(new Condition() {
                 @Override
                 public boolean validate() {
-                    return Utilities.isIdle();
+                    return Players.getLocal().getAnimation() != -1;
                 }
-            }, 2000);
+            }, 3000);
         }
         if (ROCK != null && !Calculations.isOnScreen(ROCK) && ROCK.getLocation().isOnMap()) {
             Camera.turnTo(ROCK);

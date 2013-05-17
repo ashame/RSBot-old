@@ -131,7 +131,7 @@ public final class Utilities {
     }
 
     public static boolean isIdle() {
-        final Timer t = new Timer(1500);
+        final Timer t = new Timer(3000);
         while (t.isRunning()) {
             if (Players.getLocal().getAnimation() != -1) {
                 t.reset();

@@ -5,6 +5,7 @@ import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Main;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.tab.Inventory;
+import org.powerbot.game.api.methods.widget.ChatOptions;
 import org.powerbot.game.api.util.Filter;
 import org.powerbot.game.api.wrappers.node.Item;
 import sk.action.ActionBar;
@@ -45,13 +46,28 @@ public final class Drop extends Node {
                 }
             }, 1500);
         }
-        for (int i = 0 ; i < Inventory.getItems(new Filter<Item>() {
+        if (ChatOptions.canContinue()) {
+            ChatOptions.getContinueOption().select(true);
+            Utilities.waitFor(new Condition() {
+                @Override
+                public boolean validate() {
+                    return !ChatOptions.canContinue();
+                }
+            }, 3000);
+        }
+        for (final Item item : Inventory.getItems(new Filter<Item>() {
             @Override
             public boolean accept(Item item) {
                 return item.getId() == Main.getOre().id;
             }
-        }).length; i++) {
-            ActionBar.getNode(0).spam();
+        })) {
+            ActionBar.getNode(0).send();
+            Utilities.waitFor(new Condition() {
+                @Override
+                public boolean validate() {
+                    return item == null;
+                }
+            }, 250);
         }
         for (Item item : Inventory.getItems(FILTER)) {
             if (!toDrop.contains(item)) {

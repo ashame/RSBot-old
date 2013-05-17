@@ -30,7 +30,7 @@ import java.util.List;
         hidden          = true,
         vip             = false,
         singleinstance  = false,
-        version         = 1.1
+        version         = 1.2
 )
 
 public final class Main extends ActiveScript {
