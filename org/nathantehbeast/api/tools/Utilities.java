@@ -2,15 +2,14 @@ package org.nathantehbeast.api.tools;
 
 
 import org.nathantehbeast.api.framework.Condition;
+import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.Environment;
 import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.interactive.Players;
-import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.methods.widget.Bank;
 import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.Area;
 import org.powerbot.game.api.wrappers.Tile;
-import org.powerbot.game.api.wrappers.node.Item;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -20,7 +19,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import static org.powerbot.core.script.job.Task.sleep;
 
@@ -94,18 +93,19 @@ public final class Utilities {
     }
 
     public static boolean depositAllExcept(final int... ids) {
-        final List<Item> items = new ArrayList<>();
-        for (final Item i : Inventory.getItems()) {
-            if (!items.contains(i) && !includes(i.getId(), 0)) {
-                items.add(i);
+        if (!Bank.isOpen()) {
+            return false;
+        }
+        Arrays.sort(ids);
+        for (int i : ids) {
+            if (Arrays.binarySearch(ids, i) < 0) {
+                final boolean b = Bank.deposit(i, 0);
+                if (!b) {
+                    return false;
+                }
             }
         }
-        for (final Item i : items) {
-            if (Bank.deposit(i.getId(), Bank.Amount.ALL)) {
-                items.remove(i);
-            }
-        }
-        return items.size() == 0;
+        return true;
     }
 
     public static boolean includes(final int item, final int... ids) {
@@ -131,12 +131,17 @@ public final class Utilities {
     }
 
     public static boolean isIdle() {
-        final Timer t = new Timer(3000);
-        while (t.isRunning()) {
-            if (Players.getLocal().getAnimation() != -1) {
-                t.reset();
-            }
+        final Timer t = new Timer(2000);
+        while (t.isRunning() && Players.getLocal().getAnimation() == -1) {
+            sleep(50);
         }
         return Players.getLocal().getAnimation() == -1;
+    }
+
+    public static void provide(ArrayList<Node> list, Node... nodes) {
+        for (Node node : nodes) {
+            System.out.println("Providing class: "+node);
+            list.add(node);
+        }
     }
 }

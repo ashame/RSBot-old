@@ -28,7 +28,6 @@ public final class Mine extends Node {
 
     @Override
     public void execute() {
-        Main.setStatus("Mining "+Main.getOre().name());
         final SceneObject ROCK = SceneEntities.getNearest(Main.getOre().rocks);
         if (ROCK != null && Calculations.isOnScreen(ROCK) && ROCK.getLocation().isOnMap() && ROCK.interact("Mine")) {
             Utilities.waitFor(new Condition() {

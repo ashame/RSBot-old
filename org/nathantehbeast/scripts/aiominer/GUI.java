@@ -1,13 +1,13 @@
 package org.nathantehbeast.scripts.aiominer;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static org.nathantehbeast.scripts.aiominer.Main.setOre;
-import static org.nathantehbeast.scripts.aiominer.Main.setPowermine;
-import static org.nathantehbeast.scripts.aiominer.Main.start;
+import static org.nathantehbeast.scripts.aiominer.Main.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,59 +16,77 @@ import static org.nathantehbeast.scripts.aiominer.Main.start;
  * Time: 4:54 AM
  * To change this template use File | Settings | File Templates.
  */
-public final class GUI extends JFrame {
+public final class GUI {
 
-    private JLabel oreLabel;
-    private JButton startButton;
-    private JComboBox ore;
-    private JCheckBox powermine;
+    private static JFrame frame;
+    public JButton startButton;
+    public JComboBox ore;
+    public JCheckBox powermine;
+    public JCheckBox bank;
 
     public GUI() {
-        startButton = new JButton();
-        oreLabel = new JLabel();
-        ore = new JComboBox();
-        powermine = new JCheckBox();
+        frame = new JFrame("Nathan's AIO Miner");
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
 
-        setTitle("Nathan's Miner");
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setLayout(null);
-        setSize(235, 160);
-
-        oreLabel.setText("Ore to mine: ");
-        addItem(this, oreLabel, 10, 30, 95, 25);
-
-        ore.setModel(new DefaultComboBoxModel(Constants.Ore.values()));
-        addItem(this, ore, 130, 30, 95, 25);
-
-        powermine.setText("Powermine");
-        powermine.setToolTipText("Always keep this selected. Script only supports powermining ATM");
-        powermine.setSelected(true);
-        addItem(this, powermine, 10, 60, 180, 25);
-
-        startButton.setText("Start");
+        startButton = new JButton("Start");
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 start(ae);
             }
         });
-        addItem(this, startButton, 70, 90, 65, 30);
+
+        ore = new JComboBox(new DefaultComboBoxModel(Constants.Ore.values()));
+
+        powermine = new JCheckBox("Powermine");
+        powermine.setToolTipText("Always keep this selected. Script only supports powermining ATM");
+        powermine.setSelected(true);
+        powermine.setEnabled(false);
+
+        bank = new JCheckBox("Bank");
+        bank.setToolTipText("To be implemented later");
+        bank.setSelected(false);
+        bank.setEnabled(false);
+
+        JPanel base = new JPanel();
+        base.setLayout(new BorderLayout());
+        base.setBorder(new TitledBorder("Ore to Mine"));
+
+        JLabel title = new JLabel("Nathan's AIO Miner");
+        title.setHorizontalAlignment(JLabel.CENTER);
+        title.setFont(new Font("Calibri", Font.PLAIN, 13));
+        title.setBorder(new EmptyBorder(2, 15, 0, 15));
+
+        JPanel ores = new JPanel();
+        ores.setLayout(new BoxLayout(ores, BoxLayout.Y_AXIS));
+        ores.add(ore);
+
+        JPanel options = new JPanel();
+        options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
+        options.add(powermine);
+        options.add(Box.createVerticalGlue());
+        options.add(bank);
+        options.add(Box.createVerticalGlue());
 
 
-        setResizable(false);
-        setLocationRelativeTo(getOwner());
-        setVisible(true);
+        base.add(ores, BorderLayout.NORTH);
+        base.add(options, BorderLayout.CENTER);
+        base.add(startButton, BorderLayout.SOUTH);
+
+        frame.setSize(200, 350);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(frame.getOwner());
+        frame.getContentPane().add(title, BorderLayout.NORTH);
+        frame.getContentPane().add(base);
+        frame.pack();
+        frame.setVisible(true);
     }
 
     private void start(ActionEvent ae) {
-        setVisible(false);
+        frame.setVisible(false);
         setOre((Constants.Ore) ore.getSelectedItem());
         setPowermine(powermine.isSelected());
         start = true;
-    }
-
-    private void addItem(final JFrame base, final Component component, final int x, final int y, final int w, final int h) {
-        base.add(component);
-        component.setBounds(x, y, w, h);
     }
 }

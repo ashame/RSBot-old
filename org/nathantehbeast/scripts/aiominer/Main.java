@@ -1,22 +1,23 @@
 package org.nathantehbeast.scripts.aiominer;
 
+
+import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.nodes.Drop;
 import org.nathantehbeast.scripts.aiominer.nodes.Mine;
 import org.powerbot.core.Bot;
 import org.powerbot.core.event.events.MessageEvent;
 import org.powerbot.core.event.listeners.MessageListener;
+import org.powerbot.core.event.listeners.PaintListener;
 import org.powerbot.core.script.ActiveScript;
 import org.powerbot.core.script.job.state.Node;
-import org.powerbot.core.script.job.state.Tree;
+import org.powerbot.core.script.methods.Game;
 import org.powerbot.game.api.Manifest;
 import org.powerbot.game.api.methods.input.Keyboard;
 import org.powerbot.game.api.methods.widget.WidgetCache;
 import org.powerbot.game.client.Client;
 
-import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,45 +37,22 @@ import java.util.List;
         version         = 1.2
 )
 
-public final class Main extends ActiveScript implements MessageListener {
+public final class Main extends ActiveScript implements MessageListener, PaintListener {
 
-    private Tree jobContainer = null;
-    private final List<Node> jobsCollection = Collections.synchronizedList(new ArrayList<Node>());
-    private static boolean powermine;
+    private static boolean powermine = true;
     private static Constants.Ore ore;
     public static boolean start = false;
     private final double version = getClass().getAnnotation(Manifest.class).version();
     private final String user = Bot.context().getDisplayName();
-    private static String status;
     private Client client;
-
-    private synchronized final void provide(Node... jobs) {
-        for (final Node job : jobs) {
-            if (!jobsCollection.contains(job)) {
-                jobsCollection.add(job);
-            }
-        }
-        jobContainer = new Tree(jobsCollection.toArray(new Node[jobsCollection.size()]));
-    }
+    private Node currentNode = null;
+    public static ArrayList<Node> nodes = new ArrayList<>();
 
     @Override
     public void onStart() {
         System.out.println("Welcome " + user);
         System.out.println("You are using version " + version);
-         SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    GUI gui = new GUI();
-                    if (!gui.isVisible()) {
-                        gui.setVisible(true);
-                    }
-                } catch (Throwable t) {
-                    System.out.println("Error loading GUI: "+t.getMessage());
-                    t.printStackTrace();
-                }
-            }
-         });
+        new GUI();
         while (!start) {
             sleep(600);
         }
@@ -85,26 +63,24 @@ public final class Main extends ActiveScript implements MessageListener {
             System.out.println(Integer.toString(i));
         }
         System.out.println("Powermining: "+getPowermine());
-        provide(new Mine());
-        System.out.println("Providing Mine");
-        provide(new Drop());
-        System.out.println("Prodivindg Drop");
+        Utilities.provide(nodes, new Mine(), new Drop());
     }
 
     @Override
     public int loop() {
-        if (jobContainer != null) {
-            final Node job = jobContainer.state();
-            if (job != null) {
-                jobContainer.set(job);
-                getContainer().submit(job);
-                job.join();
-            }
+        if (Game.getClientState() != Game.INDEX_MAP_LOADED) {
+            return 1000;
         }
         if (client != Bot.client()) {
             WidgetCache.purge();
             Bot.context().getEventManager().addListener(this);
             client = Bot.client();
+        }
+        for (Node node : nodes) {
+            if (node.activate()) {
+                currentNode = node;
+                node.execute();
+            }
         }
         return 600;
     }
@@ -130,15 +106,19 @@ public final class Main extends ActiveScript implements MessageListener {
         return powermine;
     }
 
-    public static void setStatus(String s) {
-        status = s;
-    }
-
     @Override
     public void messageReceived(MessageEvent me) {
         if (me.getMessage().toLowerCase().contains("is kenneh gay?")) {
             Keyboard.sendText("Ain't nobody got time fo' dat", true);
             stop();
+        }
+    }
+
+    @Override
+    public void onRepaint(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        if (currentNode != null) {
+            g2d.drawString("Current node: "+currentNode, 5, 100);
         }
     }
 }
