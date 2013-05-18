@@ -1,6 +1,7 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.tools.MCamera;
+import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.Calculations;
 import org.powerbot.game.api.methods.node.GroundItems;
@@ -20,6 +21,7 @@ public class lootGrapes extends Node {
 
     @Override
     public void execute() {
+        GuardKiller.currentNode = this;
         System.out.println("Looting Grapes.");
         GroundItem grape = GroundItems.getNearest(GRAPES);
         if (grape != null) {

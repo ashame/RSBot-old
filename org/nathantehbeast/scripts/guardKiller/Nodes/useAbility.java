@@ -1,5 +1,6 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
+import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.Game;
 import org.powerbot.game.api.methods.interactive.Players;
@@ -18,18 +19,20 @@ public class useAbility extends Node {
 
     @Override
     public void execute() {
+        GuardKiller.currentNode = this;
         if (!ActionBar.isOpen()) {
             ActionBar.makeReady();
         }
         final BarNode ability = ActionBar.getNode(new Filter<BarNode>() {
             @Override
             public boolean accept(BarNode barNode) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return barNode.canUse() && barNode.isValid();
             }
         });
         if (ability != null) {
             System.out.println("Using "+ ability.toString());
             ability.use();
+
         }
     }
 }

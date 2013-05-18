@@ -2,6 +2,7 @@ package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.tools.MCamera;
 import org.nathantehbeast.api.tools.Utilities;
+import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.Calculations;
 import org.powerbot.game.api.methods.interactive.NPCs;
@@ -38,6 +39,7 @@ public class fightGuards extends Node {
 
     @Override
     public void execute() {
+        GuardKiller.currentNode = this;
         NPC guard = NPCs.getNearest(GUARDS);
         if (guard != null) {
             if (org.nathantehbeast.api.tools.Calculations.isOnScreen(guard)) {

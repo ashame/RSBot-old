@@ -1,8 +1,15 @@
 package org.nathantehbeast.scripts.aiominer;
 
+import org.nathantehbeast.api.tools.Utilities;
+import org.nathantehbeast.scripts.aiominer.nodes.Drop;
+import org.nathantehbeast.scripts.aiominer.nodes.Mine;
+import org.powerbot.game.api.methods.interactive.Players;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +30,8 @@ public final class GUI {
     public JComboBox ore;
     public JCheckBox powermine;
     public JCheckBox bank;
+    public JSpinner radius;
+    public JLabel rLabel;
 
     public GUI() {
         frame = new JFrame("Nathan's AIO Miner");
@@ -49,9 +58,32 @@ public final class GUI {
         bank.setSelected(false);
         bank.setEnabled(false);
 
+        radius = new JSpinner();
+        radius.setModel(new SpinnerNumberModel(1, 1, 30, 1));
+        radius.add(Box.createVerticalBox());
+        radius.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                Main.radius = (int) radius.getValue();
+            }
+        });
+
+        rLabel = new JLabel("Radius:");
+
         JPanel base = new JPanel();
         base.setLayout(new BorderLayout());
-        base.setBorder(new TitledBorder("Ore to Mine"));
+
+        JPanel base1 = new JPanel();
+        base1.setLayout(new BorderLayout());
+        base1.setBorder(new TitledBorder("Ore"));
+
+        JPanel base2 = new JPanel();
+        base2.setLayout(new BorderLayout());
+        base2.setBorder(new TitledBorder("Options"));
+
+        JPanel base3 = new JPanel();
+        base3.setLayout(new BorderLayout());
+        base3.setBorder(new TitledBorder("Radius"));
 
         JLabel title = new JLabel("Nathan's AIO Miner");
         title.setHorizontalAlignment(JLabel.CENTER);
@@ -69,24 +101,36 @@ public final class GUI {
         options.add(bank);
         options.add(Box.createVerticalGlue());
 
+        base1.add(ores, BorderLayout.NORTH);
+        base2.add(options, BorderLayout.NORTH);
+        base3.add(radius, BorderLayout.NORTH);
 
-        base.add(ores, BorderLayout.NORTH);
-        base.add(options, BorderLayout.CENTER);
-        base.add(startButton, BorderLayout.SOUTH);
+        base.add(base1, BorderLayout.NORTH);
+        base.add(base2, BorderLayout.CENTER);
+        base.add(base3, BorderLayout.SOUTH);
 
-        frame.setSize(200, 350);
         frame.setResizable(false);
         frame.setLocationRelativeTo(frame.getOwner());
         frame.getContentPane().add(title, BorderLayout.NORTH);
-        frame.getContentPane().add(base);
+        frame.getContentPane().add(base, BorderLayout.CENTER);
+        frame.getContentPane().add(startButton, BorderLayout.SOUTH);
         frame.pack();
         frame.setVisible(true);
     }
 
     private void start(ActionEvent ae) {
         frame.setVisible(false);
-        setOre((Constants.Ore) ore.getSelectedItem());
-        setPowermine(powermine.isSelected());
-        start = true;
+        Main.setOre((Constants.Ore) ore.getSelectedItem());
+        Main.setPowermine(powermine.isSelected());
+        Main.startTile = Players.getLocal().getLocation();
+        Main.startTime = System.currentTimeMillis();
+        Main.radius = (int) radius.getValue();
+        System.out.println("Mining: "+((Constants.Ore) ore.getSelectedItem()).name());
+        Main.start = true;
+        Utilities.provide(nodes, new Mine(), new Drop());
+    }
+
+    public static boolean isVisible() {
+        return frame.isVisible() && frame != null;
     }
 }

@@ -108,9 +108,9 @@ public final class Utilities {
         return true;
     }
 
-    public static boolean includes(final int item, final int... ids) {
-        for (final int i : ids) {
-            if (i == item) {
+    public static boolean contains(final int[] array, final int id) {
+        for (final int i : array) {
+            if (i == id) {
                 return true;
             }
         }

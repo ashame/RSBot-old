@@ -49,7 +49,7 @@ import java.util.Map;
         authors = "NathanTehBeast",
         name = "YanilleIron",
         description = "Mines iron at yanille, option to powermine.",
-        version = 1.25,
+        version = 1.26,
         topic = 976673,
         website = "http://www.powerbot.org/community/topic/976673-yanilleiron-actionbar-dropping-powermining-support-banking-support/")
 /**
@@ -170,8 +170,7 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
             Utilities.savePaint(0, 388, 515, 140);
             ssCheck = t.getElapsed();
         }
-
-        return 150;
+        return 400;
     }
 
     @Override
@@ -282,7 +281,6 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
         g.setColor(color2);
         g.setStroke(stroke1);
         g.drawRect(480, 404, 22, 22);
-        sleep(300);
         }
         if (hide) {
             Graphics2D g = (Graphics2D) g1;

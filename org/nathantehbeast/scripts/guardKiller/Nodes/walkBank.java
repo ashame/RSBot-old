@@ -1,6 +1,7 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.tools.Utilities;
+import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.Game;
 import org.powerbot.game.api.methods.interactive.Players;
@@ -23,6 +24,7 @@ public class walkBank extends Node {
 
     @Override
     public void execute() {
+        GuardKiller.currentNode = this;
         Utilities.walkPath(PATH, true, true);
     }
 }

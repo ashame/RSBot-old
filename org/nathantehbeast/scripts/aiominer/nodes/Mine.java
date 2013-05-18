@@ -19,16 +19,17 @@ import org.powerbot.game.api.wrappers.node.SceneObject;
  * Time: 5:59 PM
  * To change this template use File | Settings | File Templates.
  */
+
 public final class Mine extends Node {
     @Override
     public boolean activate() {
-        final SceneObject ROCK = SceneEntities.getNearest(Main.getOre().rocks);
+        final SceneObject ROCK = SceneEntities.getNearest(Main.FILTER);
         return ROCK != null && !Inventory.isFull() && Players.getLocal().getAnimation() == -1;
     }
 
     @Override
     public void execute() {
-        final SceneObject ROCK = SceneEntities.getNearest(Main.getOre().rocks);
+        final SceneObject ROCK = SceneEntities.getNearest(Main.FILTER);
         if (ROCK != null && Calculations.isOnScreen(ROCK) && ROCK.getLocation().isOnMap() && ROCK.interact("Mine")) {
             Utilities.waitFor(new Condition() {
                 @Override

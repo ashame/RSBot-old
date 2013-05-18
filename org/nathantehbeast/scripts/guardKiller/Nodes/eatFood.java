@@ -1,6 +1,7 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.tools.Utilities;
+import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.Calculations;
 import org.powerbot.game.api.methods.interactive.Players;
@@ -22,6 +23,7 @@ public class eatFood extends Node {
 
     @Override
     public void execute() {
+        GuardKiller.currentNode = this;
         SceneObject grapes = SceneEntities.getNearest(GRAPES);
         Item food = Inventory.getItem(foodId);
         if (Inventory.isFull() && grapes != null && Calculations.distanceTo(grapes) < 12) {

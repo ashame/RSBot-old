@@ -42,9 +42,10 @@ import java.util.List;
         authors = "NathanTehBeast",
         name = "GuardKiller",
         description = "Kills guards + loots grapes",
-        version = 1.35, topic = 934250,
+        version = 1.36,
+        topic = 934250,
         website = "http://www.powerbot.org/community/topic/934250-free-f2p-guardkiller-abilities-support-good-profit-100kh-on-sdn",
-        singleinstance = true)
+        singleinstance = false)
 /**
  *
  * @author Nathan
@@ -84,6 +85,7 @@ public class GuardKiller extends ActiveScript implements PaintListener {
     public static boolean momentum = true;
     Timer ss = new Timer(System.currentTimeMillis());
     public static ArrayList<Integer> toBank;
+    public static Node currentNode = null;
 
     @Override
     public void onStop() {
@@ -259,6 +261,10 @@ public class GuardKiller extends ActiveScript implements PaintListener {
         }
 
         Graphics2D g = (Graphics2D) g1;
+
+        if (currentNode != null) {
+            g.drawString("Current node: "+currentNode, 5, 100);
+        }
         g.setRenderingHints(antialiasing);
 
         g.setColor(color1);
