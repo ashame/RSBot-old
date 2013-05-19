@@ -4,6 +4,7 @@ import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Main;
 import org.powerbot.core.script.job.state.Node;
+import org.powerbot.game.api.methods.input.Keyboard;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.methods.widget.ChatOptions;
 import org.powerbot.game.api.util.Filter;
@@ -11,6 +12,7 @@ import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.node.Item;
 import sk.action.ActionBar;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +74,9 @@ public final class Drop extends Node {
                 toDrop.remove(item);
                 sleep(150);
             }
+        }
+        if (Inventory.contains(Main.getOre().id)) {
+            Keyboard.sendKey((char) KeyEvent.VK_ENTER);
         }
     }
 }

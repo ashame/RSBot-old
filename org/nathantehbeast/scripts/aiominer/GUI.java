@@ -13,8 +13,10 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
-import static org.nathantehbeast.scripts.aiominer.Main.*;
+import static org.nathantehbeast.scripts.aiominer.Main.nodes;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,6 +49,12 @@ public final class GUI {
         });
 
         ore = new JComboBox(new DefaultComboBoxModel(Constants.Ore.values()));
+        ore.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                Main.setOre((Constants.Ore) ore.getSelectedItem());
+            }
+        });
 
         powermine = new JCheckBox("Powermine");
         powermine.setToolTipText("Always keep this selected. Script only supports powermining ATM");
@@ -126,6 +134,7 @@ public final class GUI {
         Main.startTime = System.currentTimeMillis();
         Main.radius = (int) radius.getValue();
         System.out.println("Mining: "+((Constants.Ore) ore.getSelectedItem()).name());
+        Main.setStartXP();
         Main.start = true;
         Utilities.provide(nodes, new Mine(), new Drop());
     }

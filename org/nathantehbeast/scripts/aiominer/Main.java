@@ -14,6 +14,8 @@ import org.powerbot.game.api.methods.Calculations;
 import org.powerbot.game.api.methods.Game;
 import org.powerbot.game.api.methods.input.Keyboard;
 import org.powerbot.game.api.methods.interactive.Players;
+import org.powerbot.game.api.methods.node.SceneEntities;
+import org.powerbot.game.api.methods.tab.Skills;
 import org.powerbot.game.api.methods.widget.WidgetCache;
 import org.powerbot.game.api.util.Filter;
 import org.powerbot.game.api.util.Time;
@@ -47,15 +49,15 @@ import java.util.ArrayList;
 public final class Main extends ActiveScript implements MessageListener, PaintListener {
 
     private static boolean powermine = true;
-    private static Constants.Ore ore = null;
+    private static Constants.Ore ore = Constants.Ore.COPPER;
     private final double version = getClass().getAnnotation(Manifest.class).version();
     private final String user = Bot.context().getDisplayName();
     private Client client;
     private Node currentNode = null;
     public static ArrayList<Node> nodes = new ArrayList<>();
     public static Tile startTile = null;
-    public static int radius = 3;
-    public static long startTime;
+    public static int radius = 1;
+    public static long startTime, runTime;
     public static boolean start = false;
     public static Filter<SceneObject> FILTER = new Filter<SceneObject>() {
         @Override
@@ -63,6 +65,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
             return sceneObject != null && isInArea(sceneObject) && Utilities.contains(ore.rocks, sceneObject.getId());
         }
     };
+    private static int startExp, expHour, expGained;
 
     @Override
     public void onStart() {
@@ -87,7 +90,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
                 node.execute();
             }
         }
-        if (!start) {
+        if (!start && Game.isLoggedIn()) {
             startTile = Players.getLocal().getLocation();
         }
         return 600;
@@ -112,6 +115,11 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     public static boolean getPowermine() {
         return powermine;
+    }
+
+    public static boolean setStartXP() {
+        startExp = Skills.getExperience(Skills.MINING);
+        return startExp != 0;
     }
 
     @Override
@@ -140,11 +148,24 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     @Override
     public void onRepaint(Graphics g) {
+        runTime = System.currentTimeMillis() - startTime;
+        expGained = Skills.getExperience(Skills.MINING) - startExp;
+        expHour = (int) ((3600000.0 / runTime) * expGained);
+        final SceneObject[] ROCKS = SceneEntities.getLoaded(new Filter<SceneObject>() {
+            @Override
+            public boolean accept(SceneObject sceneObject) {
+                return sceneObject != null && Utilities.contains(ore.rocks, sceneObject.getId()) && isInArea(sceneObject);
+            }
+        });
+
+
         Graphics2D g2d = (Graphics2D) g;
+
+        g2d.drawString("Run Time: " + Time.format(runTime), 5, 85);
         if (currentNode != null) {
             g2d.drawString("Current node: "+currentNode, 5, 100);
         }
-        g2d.drawString("Run Time: " + Time.format(System.currentTimeMillis() - startTime), 5, 89);
+        g2d.drawString("XP per Hour: "+expHour, 5, 115);
 
         if (startTile != null) {
             g2d.setColor(goldT);
@@ -153,10 +174,20 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
             g2d.setColor(gold);
             g2d.drawOval(p.x - (radius * 5), p.y - (radius * 5), 5 * (radius * 2), 5 * (radius * 2));
         }
+
+        if (ROCKS != null) {
+            for (final SceneObject so : ROCKS) {
+                for (final Polygon p : so.getBounds()) {
+                    g2d.setColor(green);
+                    g2d.fill(p);
+                }
+            }
+        }
     }
 
-    private final static Color gold = new Color(255,215,0);
-    private final static Color goldT = new Color(255, 215, 0, 150);
+    private static final Color gold = new Color(255,215,0);
+    private static final Color goldT = new Color(255, 215, 0, 150);
+    private static final Color green = Color.GREEN;
 
     public static boolean isInArea(Locatable l) {
         return Calculations.distance(startTile, l) <= radius;
