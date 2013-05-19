@@ -29,7 +29,7 @@ public final class Drop extends Node {
     final Filter<Item> FILTER = new Filter<Item>() {
         @Override
         public boolean accept(Item item) {
-            return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze") && item.getId() != Main.getOre().id;
+            return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze") && item.getId() != Main.getOre().getId();
         }
     };
 
@@ -60,7 +60,7 @@ public final class Drop extends Node {
                 }
             }, 3000);
         }
-        while (t.isRunning() && Inventory.contains(Main.getOre().id)) {
+        while (t.isRunning() && Inventory.contains(Main.getOre().getId())) {
             ActionBar.getNode(0).send();
             sleep(80, 100);
         }
@@ -75,7 +75,7 @@ public final class Drop extends Node {
                 sleep(150);
             }
         }
-        if (Inventory.contains(Main.getOre().id)) {
+        if (Inventory.contains(Main.getOre().getId())) {
             Keyboard.sendKey((char) KeyEvent.VK_ENTER);
         }
     }

@@ -4,6 +4,7 @@ import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.nodes.Drop;
 import org.nathantehbeast.scripts.aiominer.nodes.Mine;
 import org.powerbot.game.api.methods.interactive.Players;
+import org.powerbot.game.api.util.SkillData;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -134,12 +135,12 @@ public final class GUI {
         Main.startTime = System.currentTimeMillis();
         Main.radius = (int) radius.getValue();
         System.out.println("Mining: "+((Constants.Ore) ore.getSelectedItem()).name());
-        Main.setStartXP();
         Main.start = true;
+        Main.sd = new SkillData();
         Utilities.provide(nodes, new Mine(), new Drop());
     }
 
     public static boolean isVisible() {
-        return frame.isVisible() && frame != null;
+        return frame != null && frame.isVisible();
     }
 }

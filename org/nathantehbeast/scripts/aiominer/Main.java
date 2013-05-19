@@ -3,6 +3,7 @@ package org.nathantehbeast.scripts.aiominer;
 
 import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.tools.Utilities;
+import org.nathantehbeast.scripts.aiominer.Constants.Ore;
 import org.powerbot.core.Bot;
 import org.powerbot.core.event.events.MessageEvent;
 import org.powerbot.core.event.listeners.MessageListener;
@@ -18,6 +19,7 @@ import org.powerbot.game.api.methods.node.SceneEntities;
 import org.powerbot.game.api.methods.tab.Skills;
 import org.powerbot.game.api.methods.widget.WidgetCache;
 import org.powerbot.game.api.util.Filter;
+import org.powerbot.game.api.util.SkillData;
 import org.powerbot.game.api.util.Time;
 import org.powerbot.game.api.wrappers.Locatable;
 import org.powerbot.game.api.wrappers.Tile;
@@ -39,8 +41,8 @@ import java.util.ArrayList;
 @Manifest(
         authors         = "NathanTehBeast",
         name            = "Nathan's AIO Miner",
-        description     = "AIO Miner, Alpha testing phase. Powermining only for now; banking support to be added later.",
-        hidden          = true,
+        description     = "Nathan's AIO Miner. Powermines ore in various locations. Actionbar Dropping.",
+        hidden          = false,
         vip             = false,
         singleinstance  = false,
         version         = 1.2
@@ -49,7 +51,7 @@ import java.util.ArrayList;
 public final class Main extends ActiveScript implements MessageListener, PaintListener {
 
     private static boolean powermine = true;
-    private static Constants.Ore ore = Constants.Ore.COPPER;
+    private static Ore ore = Ore.COPPER;
     private final double version = getClass().getAnnotation(Manifest.class).version();
     private final String user = Bot.context().getDisplayName();
     private Client client;
@@ -62,10 +64,11 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     public static Filter<SceneObject> FILTER = new Filter<SceneObject>() {
         @Override
         public boolean accept(SceneObject sceneObject) {
-            return sceneObject != null && isInArea(sceneObject) && Utilities.contains(ore.rocks, sceneObject.getId());
+            return sceneObject != null && isInArea(sceneObject) && Utilities.contains(ore.getRocks(), sceneObject.getId());
         }
     };
     private static int startExp, expHour, expGained;
+    public static SkillData sd;
 
     @Override
     public void onStart() {
@@ -101,11 +104,11 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         System.out.println("Thanks for using Nathan's AIO Miner!");
     }
 
-    public static void setOre(Constants.Ore orex) {
+    public static void setOre(Ore orex) {
         ore = orex;
     }
 
-    public static Constants.Ore getOre() {
+    public static Ore getOre() {
         return ore;
     }
 
@@ -115,11 +118,6 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     public static boolean getPowermine() {
         return powermine;
-    }
-
-    public static boolean setStartXP() {
-        startExp = Skills.getExperience(Skills.MINING);
-        return startExp != 0;
     }
 
     @Override
@@ -149,12 +147,10 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     @Override
     public void onRepaint(Graphics g) {
         runTime = System.currentTimeMillis() - startTime;
-        expGained = Skills.getExperience(Skills.MINING) - startExp;
-        expHour = (int) ((3600000.0 / runTime) * expGained);
         final SceneObject[] ROCKS = SceneEntities.getLoaded(new Filter<SceneObject>() {
             @Override
             public boolean accept(SceneObject sceneObject) {
-                return sceneObject != null && Utilities.contains(ore.rocks, sceneObject.getId()) && isInArea(sceneObject);
+                return sceneObject != null && Utilities.contains(ore.getRocks(), sceneObject.getId()) && isInArea(sceneObject);
             }
         });
 
@@ -165,7 +161,10 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         if (currentNode != null) {
             g2d.drawString("Current node: "+currentNode, 5, 100);
         }
-        g2d.drawString("XP per Hour: "+expHour, 5, 115);
+        if (sd != null) {
+            g2d.drawString("XP Gained: "+sd.experience(Skills.MINING), 5, 115);
+            g2d.drawString("XP per Hour: "+sd.experience(SkillData.Rate.HOUR, Skills.MINING), 5, 130);
+        }
 
         if (startTile != null) {
             g2d.setColor(goldT);

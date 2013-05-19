@@ -15,7 +15,6 @@ public final class Constants {
 
     public static final int[] PICKAXES = {1265, 1267, 1269, 1271, 1273, 1275, 14099, 14107, 27082, 27083, 27084, 27085, 27086, 15259};
 
-
     public enum Ore {
         COPPER      (436, 437, "Copper ore",
                 /* Al Kharid */     11937, 11936,
@@ -61,10 +60,10 @@ public final class Constants {
                 /* Al Kharid */     11939, 11941,
                 /* Draynor */       3273, 3040);
 
-        public final int id;
-        public final int notedId;
-        public final String name;
-        public final int[] rocks;
+        private final int id;
+        private final int notedId;
+        private final String name;
+        private final int[] rocks;
 
         Ore(final int id, final int notedId, final String name, final int... rocks) {
             this.id = id;
@@ -73,13 +72,29 @@ public final class Constants {
             this.rocks = rocks;
         }
 
-        public static final boolean isNoted(int i) {
+        public final boolean isNoted(int i) {
             for (final Ore ore : Ore.values()) {
                 if (i == ore.notedId) {
                     return true;
                 }
             }
             return false;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public int getNotedId() {
+            return this.notedId;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public int[] getRocks() {
+            return this.rocks;
         }
     }
 }
