@@ -24,7 +24,7 @@ public final class Mine extends Node {
     @Override
     public boolean activate() {
         final SceneObject ROCK = SceneEntities.getNearest(Main.FILTER);
-        return ROCK != null && !Inventory.isFull() && Players.getLocal().getAnimation() == -1;
+        return ROCK != null && !Inventory.isFull() && Utilities.isIdle();
     }
 
     @Override

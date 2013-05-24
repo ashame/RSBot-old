@@ -96,7 +96,7 @@ public final class GUI {
 
         JLabel title = new JLabel("Nathan's AIO Miner");
         title.setHorizontalAlignment(JLabel.CENTER);
-        title.setFont(new Font("Calibri", Font.PLAIN, 13));
+        title.setFont(new Font("Jokerman", Font.PLAIN, 13));
         title.setBorder(new EmptyBorder(2, 15, 0, 15));
 
         JPanel ores = new JPanel();

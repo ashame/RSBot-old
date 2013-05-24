@@ -131,7 +131,7 @@ public final class Utilities {
     }
 
     public static boolean isIdle() {
-        final Timer t = new Timer(2000);
+        final Timer t = new Timer(600);
         while (t.isRunning() && Players.getLocal().getAnimation() == -1) {
             sleep(50);
         }
@@ -140,8 +140,20 @@ public final class Utilities {
 
     public static void provide(ArrayList<Node> list, Node... nodes) {
         for (Node node : nodes) {
-            System.out.println("Providing class: "+node);
+            System.out.println("Providing: "+node);
             list.add(node);
+        }
+    }
+
+    public static void loadFont(int type, String url) {
+        try {
+            URL fontUrl = new URL(url);
+            Font font = Font.createFont(type, fontUrl.openStream());
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(font);
+            System.out.println("Successfully registered Font: "+font.getFontName());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

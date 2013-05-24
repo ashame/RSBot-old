@@ -41,11 +41,13 @@ import java.util.ArrayList;
 @Manifest(
         authors         = "NathanTehBeast",
         name            = "Nathan's AIO Miner",
-        description     = "Nathan's AIO Miner. Powermines ore in various locations. Actionbar Dropping.",
+        description     = "Powermines ore in various locations. Actionbar Dropping. If your location doesn't work, take a screenshot and post in thread.",
+        topic           = 1012215,
+        website         = "http://www.powerbot.org/community/topic/1012215-free-nathans-aio-miner-powermining-actionbar-dropping/",
         hidden          = false,
         vip             = false,
         singleinstance  = false,
-        version         = 1.2
+        version         = 1.3
 )
 
 public final class Main extends ActiveScript implements MessageListener, PaintListener {
@@ -63,8 +65,8 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     public static boolean start = false;
     public static Filter<SceneObject> FILTER = new Filter<SceneObject>() {
         @Override
-        public boolean accept(SceneObject sceneObject) {
-            return sceneObject != null && isInArea(sceneObject) && Utilities.contains(ore.getRocks(), sceneObject.getId());
+        public boolean accept(SceneObject object) {
+            return object != null && isInArea(object) && Utilities.contains(ore.getRocks(), object.getId());
         }
     };
     private static int startExp, expHour, expGained;
@@ -74,27 +76,32 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     public void onStart() {
         System.out.println("Welcome " + user);
         System.out.println("You are using version " + version);
+        Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf");
         new GUI();
     }
 
     @Override
     public int loop() {
-        if (Game.getClientState() != Game.INDEX_MAP_LOADED) {
-            return 1000;
-        }
-        if (client != Bot.client()) {
-            WidgetCache.purge();
-            Bot.context().getEventManager().addListener(this);
-            client = Bot.client();
-        }
-        for (Node node : nodes) {
-            if (node.activate()) {
-                currentNode = node;
-                node.execute();
+        try {
+            if (Game.getClientState() != Game.INDEX_MAP_LOADED) {
+                return 1000;
             }
-        }
-        if (!start && Game.isLoggedIn()) {
-            startTile = Players.getLocal().getLocation();
+            if (client != Bot.client()) {
+                WidgetCache.purge();
+                Bot.context().getEventManager().addListener(this);
+                client = Bot.client();
+            }
+            for (Node node : nodes) {
+                if (node.activate()) {
+                    currentNode = node;
+                    node.execute();
+                }
+            }
+            if (!start && Game.isLoggedIn()) {
+                startTile = Players.getLocal().getLocation();
+            }
+        } catch (Exception e) {
+            System.out.println("Timer plx fix internal errors");
         }
         return 600;
     }
@@ -104,16 +111,17 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         System.out.println("Thanks for using Nathan's AIO Miner!");
     }
 
-    public static void setOre(Ore orex) {
-        ore = orex;
+    public static boolean setOre(Ore o) {
+        ore = o;
+        return ore.equals(o);
     }
 
     public static Ore getOre() {
         return ore;
     }
 
-    public static void setPowermine(boolean b) {
-        powermine = b;
+    public static boolean setPowermine(boolean b) {
+        return powermine = b;
     }
 
     public static boolean getPowermine() {
@@ -144,6 +152,8 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         }
     }
 
+    final Font font = new Font("Calibri", Font.PLAIN, 12);
+
     @Override
     public void onRepaint(Graphics g) {
         runTime = System.currentTimeMillis() - startTime;
@@ -154,9 +164,9 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
             }
         });
 
-
         Graphics2D g2d = (Graphics2D) g;
 
+        g.setFont(font);
         g2d.drawString("Run Time: " + Time.format(runTime), 5, 85);
         if (currentNode != null) {
             g2d.drawString("Current node: "+currentNode, 5, 100);
@@ -177,7 +187,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         if (ROCKS != null) {
             for (final SceneObject so : ROCKS) {
                 for (final Polygon p : so.getBounds()) {
-                    g2d.setColor(green);
+                    g2d.setColor(mask);
                     g2d.fill(p);
                 }
             }
@@ -186,7 +196,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     private static final Color gold = new Color(255,215,0);
     private static final Color goldT = new Color(255, 215, 0, 150);
-    private static final Color green = Color.GREEN;
+    private static final Color mask = new Color(51, 255, 221, 150);
 
     public static boolean isInArea(Locatable l) {
         return Calculations.distance(startTile, l) <= radius;
