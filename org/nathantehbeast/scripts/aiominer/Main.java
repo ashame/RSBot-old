@@ -27,6 +27,7 @@ import org.powerbot.game.api.wrappers.node.SceneObject;
 import org.powerbot.game.client.Client;
 import sk.action.ActionBar;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -77,7 +78,20 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         System.out.println("Welcome " + user);
         System.out.println("You are using version " + version);
         Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf");
-        new GUI();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    GUI gui = new GUI();
+                    if (!gui.isVisible()) {
+                        gui.setVisible(true);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error loading GUI: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
