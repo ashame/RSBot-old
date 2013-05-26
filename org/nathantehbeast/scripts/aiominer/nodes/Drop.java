@@ -42,12 +42,12 @@ public final class Drop extends Node {
     public void execute() {
         final List<Item> toDrop = new ArrayList<>();
         final Timer t = new Timer(10000);
-        if (!ActionBar.isOpen()) {
-            ActionBar.makeReady();
+        if (!ActionBar.isExpanded()) {
+            ActionBar.setExpanded(true);
             Utilities.waitFor(new Condition() {
                 @Override
                 public boolean validate() {
-                    return ActionBar.isOpen();
+                    return ActionBar.isExpanded();
                 }
             }, 1500);
         }
@@ -61,7 +61,7 @@ public final class Drop extends Node {
             }, 3000);
         }
         while (t.isRunning() && Inventory.contains(Main.getOre().getId())) {
-            ActionBar.getNode(0).send();
+            ActionBar.useSlot(0);
             sleep(80, 100);
         }
         for (Item item : Inventory.getItems(FILTER)) {

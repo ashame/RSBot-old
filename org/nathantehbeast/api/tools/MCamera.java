@@ -73,6 +73,7 @@ public final class MCamera {
      * @param y2
      *          The second points y value
      */
+    @SuppressWarnings("deprecation")
     public static boolean dragMouse(int x1, int y1, int x2, int y2) {
         final org.powerbot.game.client.input.Mouse mouse = Context.client().getMouse();
         final Component target = Context.get().getLoader().getComponent(0);

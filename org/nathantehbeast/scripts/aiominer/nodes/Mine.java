@@ -2,13 +2,13 @@ package org.nathantehbeast.scripts.aiominer.nodes;
 
 import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.tools.Calculations;
+import org.nathantehbeast.api.tools.MCamera;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Main;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.core.script.methods.Players;
 import org.powerbot.game.api.methods.node.SceneEntities;
 import org.powerbot.game.api.methods.tab.Inventory;
-import org.powerbot.game.api.methods.widget.Camera;
 import org.powerbot.game.api.wrappers.node.SceneObject;
 
 
@@ -39,7 +39,7 @@ public final class Mine extends Node {
             }, 3000);
         }
         if (ROCK != null && !Calculations.isOnScreen(ROCK) && ROCK.getLocation().isOnMap()) {
-            Camera.turnTo(ROCK);
+            MCamera.turnTo(ROCK, 0);
         }
     }
 }

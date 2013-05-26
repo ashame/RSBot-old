@@ -46,8 +46,8 @@ import java.util.ArrayList;
         website         = "http://www.powerbot.org/community/topic/1012215-free-nathans-aio-miner-powermining-actionbar-dropping/",
         hidden          = false,
         vip             = false,
-        singleinstance  = false,
-        version         = 1.3
+        instances       = 3,
+        version         = 1.4
 )
 
 public final class Main extends ActiveScript implements MessageListener, PaintListener {
@@ -131,7 +131,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     @Override
     public void messageReceived(MessageEvent me) {
         if (me.getMessage().toLowerCase().contains("cya nerds")) {
-            ActionBar.expand(false);
+            ActionBar.setExpanded(false);
             Utilities.waitFor(new Condition() {
                 @Override
                 public boolean validate() {
@@ -196,7 +196,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     private static final Color gold = new Color(255,215,0);
     private static final Color goldT = new Color(255, 215, 0, 150);
-    private static final Color mask = new Color(51, 255, 221, 150);
+    private static final Color mask = new Color(0, 255, 0, 80);
 
     public static boolean isInArea(Locatable l) {
         return Calculations.distance(startTile, l) <= radius;

@@ -187,8 +187,8 @@ public class GuardKiller extends ActiveScript implements PaintListener {
         if (Camera.getPitch() > 20) {
             Camera.setPitch(15);
         }
-        if (ActionBar.isOpen() && !useAbilities) {
-            ActionBar.expand(false);
+        if (ActionBar.isExpanded() && !useAbilities) {
+            ActionBar.setExpanded(false);
         }
         if ((ss.getElapsed() - ssCheck) > 3600000) {
             Utilities.savePaint(0, 0, 765, 48);

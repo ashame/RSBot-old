@@ -3,14 +3,20 @@ package org.nathantehbeast.scripts.guardKiller.Nodes;
 import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.Game;
+import org.powerbot.game.api.methods.Widgets;
 import org.powerbot.game.api.methods.interactive.Players;
-import org.powerbot.game.api.util.Filter;
+import org.powerbot.game.api.wrappers.widget.WidgetChild;
+import sk.action.Ability;
 import sk.action.ActionBar;
-import sk.action.BarNode;
+import sk.action.book.AbilityType;
+import sk.action.book.BookAbility;
+import sk.general.TimedCondition;
 
 import static org.nathantehbeast.scripts.guardKiller.GuardKiller.useAbilities;
 
 public class useAbility extends Node {
+
+    private static BookAbility ability = null;
 
     @Override
     public boolean activate() {
@@ -20,19 +26,47 @@ public class useAbility extends Node {
     @Override
     public void execute() {
         GuardKiller.currentNode = this;
-        if (!ActionBar.isOpen()) {
-            ActionBar.makeReady();
+        if (getAdrenaline() < 50) {
+            ability = getAbility(AbilityType.BASIC);
         }
-        final BarNode ability = ActionBar.getNode(new Filter<BarNode>() {
-            @Override
-            public boolean accept(BarNode barNode) {
-                return barNode.canUse() && barNode.isValid();
-            }
-        });
+        if (getAdrenaline() >= 50 && getAdrenaline() < 100) {
+            ability = getAbility(AbilityType.THRESHOLD);
+        }
+        if (getAdrenaline() == 100) {
+            ability = getAbility(AbilityType.ULTIMATE);
+        }
+        final WidgetChild chat = Widgets.get(137, 56);
         if (ability != null) {
-            System.out.println("Using "+ ability.toString());
-            ability.use();
-
+            if (chat.getText().equals("[Press Enter to Chat]")) {
+                new TimedCondition(1500) {
+                    @Override
+                    public boolean isDone() {
+                        return ActionBar.useAbility(ability);
+                    }
+                }.waitStop();
+            } else {
+                new TimedCondition(1500) {
+                    @Override
+                    public boolean isDone() {
+                        return ActionBar.getItemChild(ActionBar.findAbility(ability)).click(true);
+                    }
+                }.waitStop();
+            }
         }
+    }
+
+    private final BookAbility getAbility(AbilityType type) {
+        BookAbility ability = null;
+        for (int i = 11; i >= 0; i--) {
+            Ability a = ActionBar.getAbilityInSlot(i);
+            if (a != null && a instanceof BookAbility && ActionBar.isReady(i) && ((BookAbility) a).getType() == type) {
+                ability = (BookAbility) a;
+            }
+        }
+        return ability;
+    }
+
+    private final int getAdrenaline() {
+        return ActionBar.getAdrenaline() / 10;
     }
 }

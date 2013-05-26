@@ -20,7 +20,6 @@ import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.Widgets;
 import org.powerbot.game.api.methods.input.Mouse;
 import org.powerbot.game.api.methods.tab.Skills;
-import org.powerbot.game.api.methods.widget.Bank;
 import org.powerbot.game.api.methods.widget.Camera;
 import org.powerbot.game.api.methods.widget.WidgetCache;
 import org.powerbot.game.api.util.Filter;
@@ -28,7 +27,6 @@ import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.wrappers.map.TilePath;
 import org.powerbot.game.api.wrappers.node.Item;
-import org.powerbot.game.api.wrappers.node.SceneObject;
 import org.powerbot.game.client.Client;
 import sk.action.ActionBar;
 
@@ -89,7 +87,7 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
     public static final Filter<Item> itemFilter = new Filter<Item>() {
         @Override
         public boolean accept(Item i) {
-            if (i != null && !i.getName().toLowerCase().contains("pickaxe") && i.getId() != SpinTickets.ITEM_ID_SPIN_TICKET) {
+            if (i != null && !i.getName().toLowerCase().contains("pickaxe") && i.getId() != 24154) {
                 return true;
             }
             return false;
@@ -101,29 +99,6 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
             if (t != null) {
                 if (t.getId() == SAPPHIRE || t.getId() == EMERALD || t.getId() == RUBY || t.getId() == DIAMOND) {
                     return true;
-                }
-            }
-            return false;
-        }
-    };
-    public static final Filter<SceneObject> bankFilter = new Filter<SceneObject>() {
-        @Override
-        public boolean accept(SceneObject t) {
-            if (t != null) {
-                for (int i : Bank.BANK_BOOTH_IDS) {
-                    if (t.getId() == i && t.getLocation().canReach()) {
-                        return true;
-                    }
-                }
-                for (int i : Bank.BANK_CHEST_IDS) {
-                    if (t.getId() == i && t.getLocation().canReach()) {
-                        return true;
-                    }
-                }
-                for (int i : Bank.BANK_COUNTER_IDS) {
-                    if (t.getId() == i && t.getLocation().canReach()) {
-                        return true;
-                    }
                 }
             }
             return false;
@@ -157,11 +132,11 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
         if (Walking.getEnergy() >= 50 && !Walking.isRunEnabled()) {
             Walking.setRun(true);
         }
-        if (!ActionBar.isOpen() && pm) {
-            ActionBar.makeReady();
+        if (!ActionBar.isExpanded() && pm) {
+            ActionBar.setExpanded(true);
         }
-        if (ActionBar.isOpen() && !pm) {
-            ActionBar.expand(false);
+        if (ActionBar.isExpanded() && !pm) {
+            ActionBar.setExpanded(false);
         }
         if (Camera.getPitch() < 20 || Camera.getPitch() > 40) {
             Camera.setPitch(30);

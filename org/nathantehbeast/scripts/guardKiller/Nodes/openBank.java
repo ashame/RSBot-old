@@ -59,9 +59,8 @@ public class openBank extends Node {
             } else if (!org.nathantehbeast.api.tools.Calculations.isOnScreen(bank)) {
                 MCamera.turnTo((Locatable) bank, 2);
             } else {
-                Walking.findPath((Locatable) bank).traverse();
+                Walking.walk((Locatable) bank);
             }
         }
-        bank = null;
     }
 }

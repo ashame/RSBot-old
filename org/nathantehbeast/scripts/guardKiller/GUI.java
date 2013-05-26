@@ -25,9 +25,14 @@ public class GUI extends JFrame {
         skillLabel = new JLabel();
         foodLabel = new JLabel();
         startButton = new JButton();
-        skills = new JComboBox();
         food = new JTextField();
         abilities = new JCheckBox();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
+        skills = new JComboBox<String>(model);
+
+        for (String s : skillList) {
+            model.addElement(s);
+        }
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLayout(null);
@@ -49,7 +54,7 @@ public class GUI extends JFrame {
         });
         addItem(this, startButton, 70, 120, 65, 30);
 
-        skills.setModel(new DefaultComboBoxModel(skillList));
+
         skills.setToolTipText("The skill that you want to track EXP for in the paint.");
         addItem(this, skills, 130, 25, 70, 25);
 

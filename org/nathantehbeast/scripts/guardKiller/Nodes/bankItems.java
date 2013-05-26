@@ -49,9 +49,9 @@ public class bankItems extends Node {
             Bank.open();
         }
         if (Bank.isOpen()) {
-            while (ActionBar.isOpen()) {
-                ActionBar.expand(false);
-                Utilities.waitFor(!ActionBar.isOpen(), 1500);
+            while (ActionBar.isExpanded()) {
+                ActionBar.setExpanded(false);
+                Utilities.waitFor(!ActionBar.isExpanded(), 1500);
             }
             while (Inventory.getItems(itemFilter).length > 0) {
                 Bank.deposit(GRAPES, Bank.Amount.ALL);

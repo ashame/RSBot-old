@@ -5,6 +5,7 @@ import org.nathantehbeast.scripts.aiominer.nodes.Drop;
 import org.nathantehbeast.scripts.aiominer.nodes.Mine;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.util.SkillData;
+import org.nathantehbeast.scripts.aiominer.Constants.Ore;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -26,20 +27,20 @@ import static org.nathantehbeast.scripts.aiominer.Main.nodes;
  * Time: 4:54 AM
  * To change this template use File | Settings | File Templates.
  */
-public final class GUI {
+public final class GUI extends JFrame {
 
-    private static JFrame frame;
     public JButton startButton;
     public JComboBox ore;
+    public DefaultComboBoxModel<Ore> model;
     public JCheckBox powermine;
     public JCheckBox bank;
     public JSpinner radius;
     public JLabel rLabel;
 
     public GUI() {
-        frame = new JFrame("Nathan's AIO Miner");
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
+        setTitle("Nathan's AIO Miner");
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
 
         startButton = new JButton("Start");
         startButton.addActionListener(new ActionListener() {
@@ -49,7 +50,12 @@ public final class GUI {
             }
         });
 
-        ore = new JComboBox(new DefaultComboBoxModel(Constants.Ore.values()));
+        model = new DefaultComboBoxModel<Ore>();
+        for (Ore o : Ore.values()) {
+            model.addElement(o);
+        }
+
+        ore = new JComboBox<Ore>(model);
         ore.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -118,17 +124,17 @@ public final class GUI {
         base.add(base2, BorderLayout.CENTER);
         base.add(base3, BorderLayout.SOUTH);
 
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(frame.getOwner());
-        frame.getContentPane().add(title, BorderLayout.NORTH);
-        frame.getContentPane().add(base, BorderLayout.CENTER);
-        frame.getContentPane().add(startButton, BorderLayout.SOUTH);
-        frame.pack();
-        frame.setVisible(true);
+        setResizable(false);
+        setLocationRelativeTo(getOwner());
+        getContentPane().add(title, BorderLayout.NORTH);
+        getContentPane().add(base, BorderLayout.CENTER);
+        getContentPane().add(startButton, BorderLayout.SOUTH);
+        pack();
+        setVisible(true);
     }
 
     private void start(ActionEvent ae) {
-        frame.setVisible(false);
+        setVisible(false);
         Main.setOre((Constants.Ore) ore.getSelectedItem());
         Main.setPowermine(powermine.isSelected());
         Main.startTile = Players.getLocal().getLocation();
@@ -138,9 +144,5 @@ public final class GUI {
         Main.start = true;
         Main.sd = new SkillData();
         Utilities.provide(nodes, new Mine(), new Drop());
-    }
-
-    public static boolean isVisible() {
-        return frame != null && frame.isVisible();
     }
 }

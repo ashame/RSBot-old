@@ -66,7 +66,7 @@ public class CraftBracelets extends Node {
                 }
             }
             if (Calculations.distanceTo(furnace) > 6) {
-                Walking.findPath(furnace).traverse();
+                Walking.walk(furnace);
             }
             if (!furnace.isOnScreen()) {
                 Camera.turnTo(furnace);
