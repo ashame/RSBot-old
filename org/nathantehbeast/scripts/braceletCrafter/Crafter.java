@@ -8,6 +8,7 @@ import org.nathantehbeast.scripts.braceletCrafter.Nodes.Crafting;
 import org.nathantehbeast.scripts.braceletCrafter.Nodes.WalkBank;
 import org.nathantehbeast.scripts.braceletCrafter.Nodes.WalkFurnace;
 import org.powerbot.core.script.Script;
+import org.powerbot.core.script.job.LoopTask;
 import org.powerbot.core.script.methods.Game;
 import org.powerbot.game.api.Manifest;
 import org.powerbot.game.api.methods.Walking;
@@ -33,12 +34,12 @@ import java.util.HashMap;
         authors             = "NathanTehBeast",
         name                = "BraceletCrafter",
         description         = "Crafts Gold Bars into Bracelets at Edgeville.",
-        version             = 1.3,
+        version             = 1.31,
         topic               = 948733,
         instances           = 10,
         website             = "http://www.powerbot.org/community/topic/948733-braceletcrafter/"
 )
-public class Main extends XScript implements Script, MouseListener {
+public class Crafter extends XScript implements Script, MouseListener {
 
     private HashMap<Integer, Integer> priceMap;
 
@@ -47,7 +48,8 @@ public class Main extends XScript implements Script, MouseListener {
 
     private SkillData sd;
 
-    private static int crafted;
+    private int crafted;
+    private int a;
 
     private volatile boolean showPaint = true;
     private Timer ss = new Timer(System.currentTimeMillis());
@@ -74,6 +76,17 @@ public class Main extends XScript implements Script, MouseListener {
             provide(new Crafting(Constants.FURNACE_AREA, Constants.GOLD_ID, Constants.FURNACE_ID));
             provide(new WalkBank(Constants.GOLD_ID, Constants.BANK_AREA));
             provide(new WalkFurnace(Constants.GOLD_ID, Constants.FURNACE_AREA));
+            getContainer().submit(new LoopTask() {
+                @Override
+                public int loop() {
+                    if (sd.experience(Skills.CRAFTING) > a) {
+                        crafted++;
+                        a = sd.experience(Skills.CRAFTING);
+                    }
+                    return 100;
+                }
+            });
+            delay = 200;
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,12 +145,12 @@ public class Main extends XScript implements Script, MouseListener {
                 g.drawString("Crafting Level: " + Skills.getRealLevel(Skills.CRAFTING), 5, 30);
             }
             g.drawString("EXP Gained: " + expGained + " (" + sd.experience(SkillData.Rate.HOUR, Skills.CRAFTING) + "/hr)", 5, 45);
-            g.drawString("Bracelets Banked: " + crafted + " (" + craftHour + "/hr)", 219, 15);
+            g.drawString("Bracelets Crafted: " + crafted + " (" + craftHour + "/hr)", 219, 15);
             g.drawString("Profit Earned: " + profit + " (" + profitHour + "/hr)", 219, 30);
             g.drawString("EXP TNL: " + expTNL, 219, 45);
             g.setFont(font3);
             g.drawString("by NathanTehBeast", 666, 45);
-            g.drawString("Version: " + Main.class.getAnnotation(Manifest.class).version(), 666, 15);
+            g.drawString("Version: " + Crafter.class.getAnnotation(Manifest.class).version(), 666, 15);
             g.setFont(font2);
             g.drawString("Time Ran: " + Calc.formatTime(runTime), 429, 15);
             g.drawString("Time TNL: " + Calc.formatTime(timeTNL), 429, 45);
@@ -170,9 +183,5 @@ public class Main extends XScript implements Script, MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
         //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public static void addCrafted(int i) {
-        crafted += i;
     }
 }

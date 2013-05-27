@@ -3,7 +3,6 @@ package org.nathantehbeast.scripts.braceletCrafter.Nodes;
 import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.framework.XNode;
 import org.nathantehbeast.api.tools.Utilities;
-import org.nathantehbeast.scripts.braceletCrafter.Main;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.methods.widget.Bank;
@@ -39,21 +38,20 @@ public class Banking implements XNode {
     public void execute() {
         final Entity BANK = Bank.getNearest();
         if (BANK != null && Bank.open()) {
-            Main.addCrafted(Inventory.getCount(braceletId));
             if (Bank.depositInventory()) {
                 Utilities.waitFor(new Condition() {
                     @Override
                     public boolean validate() {
                         return !Inventory.contains(braceletId);
                     }
-                }, 2000);
+                }, 5000);
                 if (Bank.withdraw(goldId, Bank.Amount.ALL)) {
                     Utilities.waitFor(new Condition() {
                         @Override
                         public boolean validate() {
                             return Inventory.contains(goldId);
                         }
-                    }, 2000);
+                    }, 5000);
                     Bank.close();
                 }
             }

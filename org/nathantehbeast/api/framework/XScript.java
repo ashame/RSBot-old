@@ -25,6 +25,7 @@ public abstract class XScript extends ActiveScript implements PaintListener {
     private final List<XNode> container = Collections.synchronizedList(new ArrayList<XNode>());
     private Client client;
     public XNode currentNode;
+    public int delay;
 
     public synchronized final void provide(final XNode... nodes) {
         if (nodes != null ) {
@@ -82,7 +83,7 @@ public abstract class XScript extends ActiveScript implements PaintListener {
         } catch (Exception e) {
             System.out.println("Timer pls fix internal errors");
         }
-        return 600;
+        return delay;
     }
 
     @Override
