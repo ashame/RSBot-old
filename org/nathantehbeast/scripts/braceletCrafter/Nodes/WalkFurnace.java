@@ -6,7 +6,6 @@ import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.wrappers.Area;
 import org.powerbot.game.api.wrappers.Tile;
-import org.powerbot.game.api.wrappers.map.TilePath;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,12 +18,10 @@ public class WalkFurnace implements XNode {
 
     private int goldId;
     private Area furnaceArea;
-    private TilePath path;
 
-    public WalkFurnace(int goldId, Area furnaceArea, TilePath path) {
+    public WalkFurnace(int goldId, Area furnaceArea) {
         this.goldId = goldId;
         this.furnaceArea = furnaceArea;
-        this.path = path;
     }
 
 

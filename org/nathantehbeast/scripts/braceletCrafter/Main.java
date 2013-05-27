@@ -71,9 +71,9 @@ public class Main extends XScript implements Script, MouseListener {
             startTime = System.currentTimeMillis();
             sd = new SkillData();
             provide(new Banking(Constants.GOLD_ID, Constants.BRACELET_ID, Constants.BANK_AREA));
-            provide(new Crafting(Constants.FURNACE_AREA, Constants.GOLD_ID, Constants.FURANCE_ID));
-            provide(new WalkBank(Constants.GOLD_ID, Constants.BANK_AREA, Constants.BANK_PATH));
-            provide(new WalkFurnace(Constants.GOLD_ID, Constants.FURNACE_AREA, Constants.FURNACE_PATH));
+            provide(new Crafting(Constants.FURNACE_AREA, Constants.GOLD_ID, Constants.FURNACE_ID));
+            provide(new WalkBank(Constants.GOLD_ID, Constants.BANK_AREA));
+            provide(new WalkFurnace(Constants.GOLD_ID, Constants.FURNACE_AREA));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
