@@ -1,5 +1,6 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
+import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.state.Node;
@@ -27,7 +28,7 @@ public class eatFood extends Node {
         SceneObject grapes = SceneEntities.getNearest(GRAPES);
         Item food = Inventory.getItem(foodId);
         if (Inventory.isFull() && grapes != null && Calculations.distanceTo(grapes) < 12) {
-            if (org.nathantehbeast.api.tools.Calculations.isOnScreen(grapes) && food != null) {
+            if (Calc.isOnScreen(grapes) && food != null) {
                 food.getWidgetChild().click(true);
                 Utilities.waitFor(!Inventory.isFull(), 1500);
             }

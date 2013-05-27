@@ -1,5 +1,6 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
+import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.MCamera;
 import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.state.Node;
@@ -25,7 +26,7 @@ public class lootGrapes extends Node {
         System.out.println("Looting Grapes.");
         GroundItem grape = GroundItems.getNearest(GRAPES);
         if (grape != null) {
-            if (org.nathantehbeast.api.tools.Calculations.isOnScreen(grape)) {
+            if (Calc.isOnScreen(grape)) {
                 int gB = Inventory.getCount(GRAPES);
                 if (grape.interact("Take", "Grapes")) {
                     while (Inventory.getCount(GRAPES) < gB) {

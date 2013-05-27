@@ -1,5 +1,6 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
+import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.MCamera;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.guardKiller.GuardKiller;
@@ -49,14 +50,14 @@ public class openBank extends Node {
         System.out.println("Opening Bank.");
         Entity bank = Bank.getNearest();
         if (bank != null) {
-            if (org.nathantehbeast.api.tools.Calculations.isOnScreen(bank)) {
+            if (Calc.isOnScreen(bank)) {
                 try {
                     Bank.open();
                 } catch (NullPointerException ne) {
                     System.out.println("Error while opening bank: " + ne.getMessage());
                 }
                 Utilities.waitFor(Bank.isOpen(), 5000);
-            } else if (!org.nathantehbeast.api.tools.Calculations.isOnScreen(bank)) {
+            } else if (!Calc.isOnScreen(bank)) {
                 MCamera.turnTo((Locatable) bank, 2);
             } else {
                 Walking.walk((Locatable) bank);

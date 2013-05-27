@@ -1,5 +1,6 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
+import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.MCamera;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.guardKiller.GuardKiller;
@@ -42,7 +43,7 @@ public class fightGuards extends Node {
         GuardKiller.currentNode = this;
         NPC guard = NPCs.getNearest(GUARDS);
         if (guard != null) {
-            if (org.nathantehbeast.api.tools.Calculations.isOnScreen(guard)) {
+            if (Calc.isOnScreen(guard)) {
                 try {
                     if (guard.interact("Attack")) {
                         Utilities.waitFor(Players.getLocal().getInteracting() != null, 800);

@@ -1,12 +1,11 @@
 package org.nathantehbeast.api.tools;
 
+import org.powerbot.core.Bot;
+import org.powerbot.core.script.util.Random;
 import org.powerbot.game.api.methods.input.Mouse;
 import org.powerbot.game.api.methods.widget.Camera;
-import org.powerbot.game.api.util.Random;
 import org.powerbot.game.api.wrappers.Locatable;
-import org.powerbot.game.bot.Context;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
 
 /**
@@ -14,18 +13,8 @@ import java.awt.event.MouseEvent;
  * Date: 2/8/13
  * Time: 8:06 PM
  */
-public final class MCamera {
+public class MCamera {
 
-    /**
-     * Uses the mouse to turn the camera to an object
-     *
-     * @param locatable
-     *           The object you want to turn the camera to
-     *
-     * @param degreesDeviation
-     *           The amount of deviation of the angle
-     *
-     */
     public static boolean turnTo(Locatable locatable, int degreesDeviation){
         return setAngle(Camera.getMobileAngle(locatable), degreesDeviation);
     }
@@ -34,10 +23,10 @@ public final class MCamera {
      * Uses the mouse to turn the camera to the specified angle
      *
      * @param degrees
-     *           The angle to set the camera to
+     * The angle to set the camera to
      *
      * @param degreesDeviation
-     *           The amount of deviation of the angle
+     * The amount of deviation of the angle
      */
     public static boolean setAngle(int degrees, int degreesDeviation) {
         final double DEGREES_PER_PIXEL_X = 0.35;
@@ -65,28 +54,25 @@ public final class MCamera {
      * Middle clicks and drags the mouse from the specified points
      *
      * @param x1
-     *          The first points x value
+     * The first points x value
      * @param y1
-     *          The first points y value
+     * The first points y value
      * @param x2
-     *          The second points x value
+     * The second points x value
      * @param y2
-     *          The second points y value
+     * The second points y value
      */
-    @SuppressWarnings("deprecation")
     public static boolean dragMouse(int x1, int y1, int x2, int y2) {
-        final org.powerbot.game.client.input.Mouse mouse = Context.client().getMouse();
-        final Component target = Context.get().getLoader().getComponent(0);
+        final org.powerbot.game.client.input.Mouse mouse = Bot.client().getMouse();
+        final java.awt.Component target = Bot.context().getLoader().getComponent(0);
         Mouse.move(x1, y1);
         mouse.sendEvent(
                 new MouseEvent(target, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, Mouse.getX(), Mouse.getY(), 1, false, MouseEvent.BUTTON2)
         );
-        Mouse.setSpeed(Mouse.Speed.values()[Random.nextInt(1,3)]);
         Mouse.move(x2, y2);
         mouse.sendEvent(
                 new MouseEvent(target, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, Mouse.getX(), Mouse.getY(), 1, false, MouseEvent.BUTTON2)
         );
-        Mouse.setSpeed(Mouse.Speed.NORMAL);
         return Mouse.getX() == x2 && Mouse.getY() == y2 && !Mouse.isPressed();
     }
 
@@ -94,10 +80,10 @@ public final class MCamera {
      * Uses the mouse to change the camera to the specified pitch
      *
      * @param pitch
-     *          The pitch you want to set the camera to
+     * The pitch you want to set the camera to
      *
      * @param deviation
-     *           The amount of deviation of the pitch
+     * The amount of deviation of the pitch
      *
      * @return <tt>true</tt> if the pitch is successful set
      */

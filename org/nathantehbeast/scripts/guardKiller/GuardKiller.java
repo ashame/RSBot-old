@@ -1,7 +1,7 @@
 package org.nathantehbeast.scripts.guardKiller;
 
 import org.nathantehbeast.api.framework.Condition;
-import org.nathantehbeast.api.tools.Calculations;
+import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.guardKiller.Nodes.*;
 import org.powerbot.core.Bot;
@@ -39,13 +39,14 @@ import java.util.List;
  * and open the template in the editor.
  */
 @Manifest(
-        authors = "NathanTehBeast",
-        name = "GuardKiller",
-        description = "Kills guards + loots grapes",
-        version = 1.36,
-        topic = 934250,
-        website = "http://www.powerbot.org/community/topic/934250-free-f2p-guardkiller-abilities-support-good-profit-100kh-on-sdn",
-        singleinstance = false)
+        authors             = "NathanTehBeast",
+        name                = "GuardKiller",
+        description         = "Kills guards + loots grapes",
+        version             = 1.36,
+        topic               = 934250,
+        website             = "http://www.powerbot.org/community/topic/934250-free-f2p-guardkiller-abilities-support-good-profit-100kh-on-sdn",
+        instances           = 10
+)
 /**
  *
  * @author Nathan
@@ -110,7 +111,7 @@ public class GuardKiller extends ActiveScript implements PaintListener {
         while (!start) {
             sleep(300);
         }
-        grapePrice = Calculations.getPrice(GRAPES);
+        grapePrice = Calc.getPrice(GRAPES);
         Node[] branch1 = new Node[]{new fightGuards(), new eatFood(), new lootGrapes()}; //Idle & at castle area
         Node[] branch2 = new Node[]{new bankItems()}; //at Bank
         provide(new branch1(branch1), new branch2(branch2), new openBank(), new walkCastle(), new walkBank(), new useAbility());
@@ -284,7 +285,7 @@ public class GuardKiller extends ActiveScript implements PaintListener {
         g.drawString("Grapes Looted: " + grapesLooted, 219, 15);
         g.drawString("Profit Earned: " + profit + " (" + profitHour + ")", 219, 30);
         g.drawString("EXP TNL: " + expTNL, 219, 45);
-        g.drawString("Time Ran: " + Calculations.formatTime(runTime), 429, 15);
+        g.drawString("Time Ran: " + Calc.formatTime(runTime), 429, 15);
         if (!useAbilities) {
             g.drawString("Using food: " + foodUsed + "*", 429, 30);
         } else {

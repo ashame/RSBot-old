@@ -1,7 +1,7 @@
 package org.nathantehbeast.scripts.yanilleIron;
 
 import org.nathantehbeast.api.framework.Condition;
-import org.nathantehbeast.api.tools.Calculations;
+import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.yanilleIron.Nodes.*;
 import org.powerbot.core.Bot;
@@ -44,12 +44,13 @@ import java.util.Map;
  * and open the template in the editor.
  */
 @Manifest(
-        authors = "NathanTehBeast",
-        name = "YanilleIron",
-        description = "Mines iron at yanille, option to powermine.",
-        version = 1.26,
-        topic = 976673,
-        website = "http://www.powerbot.org/community/topic/976673-yanilleiron-actionbar-dropping-powermining-support-banking-support/")
+        authors             = "NathanTehBeast",
+        name                = "YanilleIron",
+        description         = "Mines iron at yanille, option to powermine.",
+        version             = 1.26,
+        topic               = 976673,
+        instances           = 10,
+        website             = "http://www.powerbot.org/community/topic/976673-yanilleiron-actionbar-dropping-powermining-support-banking-support/")
 /**
  *
  * @author Nathan
@@ -61,7 +62,7 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
     public static final List<Node> jobsCollection = Collections.synchronizedList(new ArrayList<Node>());
     public static Tree jobContainer = null;
     public static Client client = Bot.client();
-    public static boolean pm = JOptionPane.showInputDialog(new javax.swing.JFrame(), "Powermine? Type YES or NO", JOptionPane.INFORMATION_MESSAGE).toLowerCase().matches("yes") ? true : false;
+    public static boolean pm = JOptionPane.showInputDialog(new JFrame(), "Powermine? Type YES or NO", JOptionPane.INFORMATION_MESSAGE).toLowerCase().matches("yes");
     public static int startExp, startLevel, levelsGained, expGained, expTNL, expHour, oresMined,
             oresHour, profitEarned, profitHour, sapphiresMined, rubiesMined, emeraldsMined, diamondsMined,
             ironPrice, sapphirePrice, emeraldPrice, rubyPrice, diamondPrice, gemsMined, gemPrice;
@@ -161,7 +162,7 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
                 return Game.isLoggedIn();
             }
         }, 200, 3500);
-        prices = Calculations.getPrices(IRON, SAPPHIRE, EMERALD, RUBY, DIAMOND);
+        prices = Calc.getPrices(IRON, SAPPHIRE, EMERALD, RUBY, DIAMOND);
         startExp = Skills.getExperience(Skills.MINING);
         startTime = System.currentTimeMillis();
         startLevel = Skills.getRealLevel(Skills.MINING);
@@ -245,10 +246,10 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
             g.drawString(Integer.toString(Skills.getRealLevel(Skills.MINING)), 154, 447);
         else
             g.drawString(Skills.getRealLevel(Skills.MINING) + " (" + levelsGained + ")", 154, 447);
-        g.drawString(Calculations.formatTime(runTime), 147, 468);
+        g.drawString(Calc.formatTime(runTime), 147, 468);
         g.drawString(Integer.toString(expGained), 137, 488);
         g.drawString(Integer.toString(expTNL), 140, 510);
-        g.drawString(Calculations.formatTime(runTime), 390, 448);
+        g.drawString(Calc.formatTime(runTime), 390, 448);
         g.drawString(oresMined + " (" + oresHour + ")", 400, 467);
         g.drawString(Integer.toString(gemsMined), 407, 488);
         g.drawString(profitEarned + " (" + profitHour + ")", 410, 510);

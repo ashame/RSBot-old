@@ -1,11 +1,9 @@
 package org.nathantehbeast.scripts.aiominer;
 
-import org.nathantehbeast.api.tools.Utilities;
+import org.nathantehbeast.scripts.aiominer.Constants.Ore;
 import org.nathantehbeast.scripts.aiominer.nodes.Drop;
 import org.nathantehbeast.scripts.aiominer.nodes.Mine;
 import org.powerbot.game.api.methods.interactive.Players;
-import org.powerbot.game.api.util.SkillData;
-import org.nathantehbeast.scripts.aiominer.Constants.Ore;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -18,8 +16,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import static org.nathantehbeast.scripts.aiominer.Main.nodes;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Nathan
@@ -27,7 +23,7 @@ import static org.nathantehbeast.scripts.aiominer.Main.nodes;
  * Time: 4:54 AM
  * To change this template use File | Settings | File Templates.
  */
-public final class GUI extends JFrame {
+public class GUI extends JFrame {
 
     public JButton startButton;
     public JComboBox ore;
@@ -50,12 +46,12 @@ public final class GUI extends JFrame {
             }
         });
 
-        model = new DefaultComboBoxModel<Ore>();
+        model = new DefaultComboBoxModel<>();
         for (Ore o : Ore.values()) {
             model.addElement(o);
         }
 
-        ore = new JComboBox<Ore>(model);
+        ore = new JComboBox<>(model);
         ore.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -79,7 +75,7 @@ public final class GUI extends JFrame {
         radius.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                Main.radius = (int) radius.getValue();
+                Main.setRadius((int) radius.getValue());
             }
         });
 
@@ -135,14 +131,15 @@ public final class GUI extends JFrame {
 
     private void start(ActionEvent ae) {
         setVisible(false);
-        Main.setOre((Constants.Ore) ore.getSelectedItem());
+        Main.setOre((Ore) ore.getSelectedItem());
         Main.setPowermine(powermine.isSelected());
-        Main.startTile = Players.getLocal().getLocation();
-        Main.startTime = System.currentTimeMillis();
-        Main.radius = (int) radius.getValue();
-        System.out.println("Mining: "+((Constants.Ore) ore.getSelectedItem()).name());
-        Main.start = true;
-        Main.sd = new SkillData();
-        Utilities.provide(nodes, new Mine(), new Drop());
+        Main.setStartTile();
+        Main.startTimer();
+        Main.setRadius((int) radius.getValue());
+        Main.setSkillData();
+        Main.provide(new Mine((Ore) ore.getSelectedItem(), Players.getLocal().getLocation(), (int) radius.getValue()));
+        if (powermine.isSelected()) {
+            Main.provide(new Drop(powermine.isSelected(), (Ore) ore.getSelectedItem()));
+        }
     }
 }

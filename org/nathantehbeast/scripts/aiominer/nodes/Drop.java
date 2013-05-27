@@ -2,7 +2,7 @@ package org.nathantehbeast.scripts.aiominer.nodes;
 
 import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.tools.Utilities;
-import org.nathantehbeast.scripts.aiominer.Main;
+import org.nathantehbeast.scripts.aiominer.Constants.Ore;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.input.Keyboard;
 import org.powerbot.game.api.methods.tab.Inventory;
@@ -26,16 +26,29 @@ import java.util.List;
  */
 public final class Drop extends Node {
 
+    private boolean powermine;
+    private Ore ore;
+
+    /**
+     * @param powermine To drop or not to drop
+     * @param ore       The Constants.Ore to drop
+     */
+    public Drop(final boolean powermine, final Ore ore) {
+        this.powermine = powermine;
+        this.ore = ore;
+    }
+
+
     final Filter<Item> FILTER = new Filter<Item>() {
         @Override
         public boolean accept(Item item) {
-            return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze") && item.getId() != Main.getOre().getId();
+            return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze") && item.getId() != ore.getId();
         }
     };
 
     @Override
     public boolean activate() {
-        return Main.getPowermine() && Inventory.isFull();
+        return powermine && Inventory.isFull();
     }
 
     @Override
@@ -60,7 +73,7 @@ public final class Drop extends Node {
                 }
             }, 3000);
         }
-        while (t.isRunning() && Inventory.contains(Main.getOre().getId())) {
+        while (t.isRunning() && Inventory.contains(ore.getId())) {
             ActionBar.useSlot(0);
             sleep(80, 100);
         }
@@ -75,7 +88,7 @@ public final class Drop extends Node {
                 sleep(150);
             }
         }
-        if (Inventory.contains(Main.getOre().getId())) {
+        if (Inventory.contains(ore.getId())) {
             Keyboard.sendKey((char) KeyEvent.VK_ENTER);
         }
     }

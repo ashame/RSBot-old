@@ -1,9 +1,12 @@
 package org.nathantehbeast.api.tools;
 
+import org.powerbot.game.api.methods.Calculations;
 import org.powerbot.game.api.methods.Game;
 import org.powerbot.game.api.methods.Widgets;
 import org.powerbot.game.api.methods.tab.Skills;
 import org.powerbot.game.api.wrappers.Entity;
+import org.powerbot.game.api.wrappers.Locatable;
+import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.wrappers.widget.WidgetChild;
 
 import java.awt.*;
@@ -23,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * Time: 3:35 PM
  * To change this template use File | Settings | File Templates.
  */
-public final class Calculations {
+public final class Calc {
 
     /**
      *
@@ -168,5 +171,9 @@ public final class Calculations {
             }
         }
         return false;
+    }
+
+    public static boolean isInArea(Tile t, Locatable l, int r) {
+        return Calculations.distance(l, t) <= r;
     }
 }

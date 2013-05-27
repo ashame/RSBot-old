@@ -2,7 +2,6 @@ package org.nathantehbeast.api.tools;
 
 
 import org.nathantehbeast.api.framework.Condition;
-import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.Environment;
 import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.interactive.Players;
@@ -18,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.powerbot.core.script.job.Task.sleep;
@@ -81,7 +79,7 @@ public final class Utilities {
     }
 
     public static boolean savePaint(final int x, final int y, final int w, final int h) {
-        final File path = new File(Environment.getStorageDirectory().getPath(), Calculations.longToDate(System.currentTimeMillis()) + ".png");
+        final File path = new File(Environment.getStorageDirectory().getPath(), Calc.longToDate(System.currentTimeMillis()) + ".png");
         final BufferedImage img = Environment.captureScreen().getSubimage(x, y, w, h);
         try {
             ImageIO.write(img, "png", path);
@@ -136,13 +134,6 @@ public final class Utilities {
             sleep(50);
         }
         return Players.getLocal().getAnimation() == -1;
-    }
-
-    public static void provide(ArrayList<Node> list, Node... nodes) {
-        for (Node node : nodes) {
-            System.out.println("Providing: "+node);
-            list.add(node);
-        }
     }
 
     public static void loadFont(int type, String url) {
