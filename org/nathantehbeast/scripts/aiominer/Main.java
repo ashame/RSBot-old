@@ -3,6 +3,7 @@ package org.nathantehbeast.scripts.aiominer;
 
 import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.tools.Calc;
+import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.api.tools.Skill;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
@@ -29,13 +30,10 @@ import org.powerbot.game.api.wrappers.node.SceneObject;
 import org.powerbot.game.client.Client;
 import sk.action.ActionBar;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,7 +52,7 @@ import java.util.Calendar;
         hidden                  = false,
         vip                     = false,
         instances               = 3,
-        version                 = 1.62
+        version                 = 1.63
 )
 
 public final class Main extends ActiveScript implements MessageListener, PaintListener, MouseListener {
@@ -64,7 +62,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     private static final Color mask = new Color(0, 255, 0, 80);
     private static final Color white = Color.WHITE;
     private static final Color black = Color.BLACK;
-    private static final Image paint = Utilities.getImage("http://puu.sh/32cpZ.jpg");
+    private static final Image paint = Utilities.getImage("http://puu.sh/32QlF.jpg");
     private static final BasicStroke stroke = new BasicStroke(2);
 
     private final Font font = new Font("Calibri", Font.PLAIN, 12);
@@ -77,7 +75,6 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     private static Ore ore = Ore.COPPER;
 
     private final double version = getClass().getAnnotation(Manifest.class).version();
-    private final String user = Bot.context().getDisplayName();
 
     private Client client;
 
@@ -95,15 +92,15 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     @Override
     public void onStart() {
-        Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf");
-        Utilities.loadFont(Font.TRUETYPE_FONT, "http://www.dropbox.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf");
-        Mouse.setSpeed(Mouse.Speed.VERY_FAST);
         logger = new Logger();
-        if (debug) {
-            logger.display();
+        if (Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf")) {
+            log("Successfully loaded font: Jokerman");
         }
+        if (Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf")) {
+            log("Successfully loaded font: Lithos Pro Regular");
+        }
+        Mouse.setSpeed(Mouse.Speed.VERY_FAST);
         gui = new GUI();
-        log("Welcome " + user);
         log("You are using version " + version);
     }
 
@@ -126,6 +123,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
             }
             if (gui != null && gui.isVisible() && Game.isLoggedIn()) {
                 startTile = Players.getLocal().getLocation();
+                showPaint = true;
             }
         } catch (Exception e) {
             log("Timer plx fix internal errors");
@@ -138,6 +136,8 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         showPaint = true;
         paintMouse = false;
         sleep(100);
+        Logger.remove();
+        sleep(1000);
         Utilities.savePaint(0, 388, 520, 140);
         log("Thanks for using Nathan's AIO Miner!");
     }
@@ -145,8 +145,11 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     @Override
     public void messageReceived(MessageEvent me) {
         String msg = me.getId() != 2 ? me.getMessage().toLowerCase() : "";
-        if (msg.contains("mine some") || msg.contains("armour allows you to mine an additional ore")) {
+        if (msg.contains("manage to mine some") || msg.contains("armour allows you to mine an additional ore")) {
             oresMined++;
+        }
+        if (msg.contains("manage to mine two")) {
+            oresMined+=2;
         }
         if (me.getMessage().toLowerCase().contains("cya nerds")) {
             ActionBar.setExpanded(false);
@@ -173,18 +176,15 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     @Override
     public void onRepaint(Graphics g) {
         long runTime = System.currentTimeMillis() - startTime;
-        SceneObject[] ROCKS = null;
+        SceneObject[] ROCKS;
         Graphics2D g2d = (Graphics2D) g;
         g.setFont(font);
 
-        g2d.drawString("Run Time: " + Time.format(runTime), 5, 85);
         if (sd == null) {
             g2d.drawString("Waiting for GUI...", 5, 100);
         }
-        if (currentNode != null && sd != null) {
-            long ttl = (long) ((double) Skill.MINING.getExperienceRequired() / (double) ((int) ((3600000.0 / runTime) * sd.experience(Skills.MINING))) * 3600000);
+        if (currentNode != null && debug) {
             g2d.drawString("Current node: " + currentNode, 5, 100);
-            g2d.drawString("Time till level: " +Time.format(ttl), 5, 115);
         }
 
         if (startTile != null && showPaint) { //Paints radius + rocks
@@ -212,12 +212,15 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
         if (sd != null && showPaint) { //Main paint
             long oresHour = (int) ((3600000.0 / runTime) * oresMined);
+            long ttl = (long) ((double) Skill.MINING.getExperienceRequired() / (double) ((int) ((3600000.0 / runTime) * sd.experience(Skills.MINING))) * 3600000);
             g2d.drawImage(paint, -2, 388, null);
             g2d.setFont(font1);
             g2d.setColor(white);
             g2d.drawString(Skills.getRealLevel(Skills.MINING) +"(+"+sd.level(Skills.MINING)+")", 190, 443);
             g2d.drawString(sd.experience(Skills.MINING) + " (" + sd.experience(SkillData.Rate.HOUR, Skills.MINING) + "/h)", 190, 457);
             g2d.drawString(oresMined + " ("+oresHour+"/h)", 190, 470);
+            g2d.drawString(Time.format(ttl), 190, 483);
+            g2d.drawString(Time.format(System.currentTimeMillis() - startTime), 190, 496);
             g2d.setFont(font1_b);
             g2d.drawString("Script by NathanTehBeast", 359, 519);
             g2d.drawString("Paint by Maxmm", 6, 519);
@@ -296,94 +299,5 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     public static void log(String s) {
         logger.log(s);
-    }
-
-    private class Logger {
-        public void main(String[] args) {
-            Logger logger = new Logger();
-            logger.display();
-            log("started");
-        }
-
-        public void display() {
-            if(frame != null) {
-                frame.setVisible(true);
-            }
-        }
-
-        public Logger() {
-            init();
-        }
-
-        public void dispose() {
-            if(frame != null && frame.isVisible()) {
-                frame.dispose();
-            }
-        }
-
-        public void setTitle(String title) {
-            if(frame != null) {
-                frame.setTitle(title);
-            }
-        }
-
-        public String getTime(String dateFormat) {
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-            return sdf.format(cal.getTime());
-        }
-
-        public void log() {
-            textArea1.append(System.getProperty("line.separator"));
-            textArea1.scrollRectToVisible(new Rectangle(0, textArea1.getHeight() - 2, 1, 1));
-        }
-
-        public void log(String o) {
-            try {
-                textArea1.append("[" + getTime("hh:mm:ss z") + "] " + o + System.getProperty("line.separator"));
-                textArea1.scrollRectToVisible(new Rectangle(0, textArea1.getHeight() - 2, 1, 1));
-                System.out.println(o);
-            } catch(Exception ignored) {}
-        }
-
-        public void init() {
-
-            frame = new JFrame("Log");
-            scrollPane1 = new JScrollPane();
-            textArea1 = new JTextArea();
-
-            Container contentPane = frame.getContentPane();
-
-            {
-
-                //---- textArea1 ----
-                textArea1.setFont(new Font("Lithos Pro Regular", Font.PLAIN, 11));
-                textArea1.setWrapStyleWord(true);
-                textArea1.setBackground(Color.black);
-                textArea1.setForeground(Color.WHITE);
-                textArea1.setEditable(false);
-                textArea1.setLineWrap(true);
-                scrollPane1.setViewportView(textArea1);
-            }
-
-            GroupLayout contentPaneLayout = new GroupLayout(contentPane);
-            contentPane.setLayout(contentPaneLayout);
-            contentPaneLayout.setHorizontalGroup(
-                    contentPaneLayout.createParallelGroup()
-                            .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 749, Short.MAX_VALUE)
-            );
-            contentPaneLayout.setVerticalGroup(
-                    contentPaneLayout.createParallelGroup()
-                            .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
-            );
-            frame.setSize(780, 245);
-            frame.setLocationRelativeTo(frame.getOwner());
-            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-        }
-
-        private JScrollPane scrollPane1;
-        private JTextArea textArea1;
-        private JFrame frame;
     }
 }

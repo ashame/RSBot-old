@@ -136,15 +136,17 @@ public final class Utilities {
         return Players.getLocal().getAnimation() == -1;
     }
 
-    public static void loadFont(int type, String url) {
+    public static boolean loadFont(int type, String url) {
         try {
             URL fontUrl = new URL(url);
             Font font = Font.createFont(type, fontUrl.openStream());
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(font);
             System.out.println("Successfully registered Font: "+font.getFontName());
+            return true;
         } catch (Exception e) {
             System.out.println("Error loading font: "+e.getMessage());
+            return false;
         }
     }
 }

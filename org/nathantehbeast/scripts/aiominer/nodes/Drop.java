@@ -3,7 +3,6 @@ package org.nathantehbeast.scripts.aiominer.nodes;
 import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
-import org.nathantehbeast.scripts.aiominer.Main;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.methods.widget.ChatOptions;
@@ -80,18 +79,15 @@ public final class Drop extends Node {
             for (Item item : Inventory.getItems(FILTER)) {
                 if (!toDrop.contains(item)) {
                     toDrop.add(item);
-                    Main.log("Added " + item.getName() + " to drop list.");
                 }
             }
             for (ListIterator<Item> li = toDrop.listIterator() ; li.hasNext();) {
                 Item i = li.next();
                 if (i.getWidgetChild().interact("Drop")) {
-                    Main.log("Attempting to drop " + i.getStackSize() + "x " + i.getName());
                     sleep(300);
                 }
             }
             toDrop.clear();
-            Main.log("Successfully cleared drop list.");
         }
         if (Inventory.contains(ore.getId())) {
             ActionBar.setExpanded(false);
@@ -102,6 +98,8 @@ public final class Drop extends Node {
                 }
             }, 2000);
             ActionBar.setExpanded(true);
+        } else {
+            ActionBar.setExpanded(false);
         }
     }
 }
