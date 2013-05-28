@@ -2,6 +2,7 @@ package org.nathantehbeast.scripts.guardKiller;
 
 import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.tools.Calc;
+import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.guardKiller.Nodes.*;
 import org.powerbot.core.Bot;
@@ -104,7 +105,7 @@ public class GuardKiller extends ActiveScript implements PaintListener {
                         gui.setVisible(true);
                     }
                 } catch (Throwable t) {
-                    System.out.println("Error loading GUI: " + t.getMessage());
+                    Logger.log("Error loading GUI: " + t.getMessage());
                 }
             }
         });

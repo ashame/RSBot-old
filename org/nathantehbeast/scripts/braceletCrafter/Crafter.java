@@ -2,6 +2,7 @@ package org.nathantehbeast.scripts.braceletCrafter;
 
 import org.nathantehbeast.api.framework.XScript;
 import org.nathantehbeast.api.tools.Calc;
+import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.braceletCrafter.Nodes.Banking;
 import org.nathantehbeast.scripts.braceletCrafter.Nodes.Crafting;
@@ -35,7 +36,7 @@ import java.util.HashMap;
         authors             = "NathanTehBeast",
         name                = "BraceletCrafter",
         description         = "Crafts Gold Bars into Bracelets at Edgeville. Start in NE corner of Edgeville bank with gold bars either in the bank or inventory.",
-        version             = 1.33,
+        version             = 1.34,
         topic               = 948733,
         instances           = 10,
         website             = "http://www.powerbot.org/community/topic/948733-braceletcrafter/"
@@ -62,7 +63,7 @@ public class Crafter extends XScript implements Script, MouseListener {
     private static final Font font  = new Font("Calibri", Font.PLAIN, 12);
     private static final Font lithos = new Font("Lithos Pro Regular", 0, 10);
     private static final Font lithos_b = new Font("Lithos Pro Regular", Font.BOLD, 10);
-    private static final Font font3 = new Font("Lithos Pro Regular", 1, 9);
+    private static final Font lithos_b_small = new Font("Lithos Pro Regular", Font.BOLD, 9);
     private static final Color black = Color.BLACK;
     private static final BasicStroke stroke = new BasicStroke(2);
 
@@ -74,6 +75,8 @@ public class Crafter extends XScript implements Script, MouseListener {
             while (Game.getClientState() != Game.INDEX_MAP_LOADED) {
                 sleep(600);
             }
+            new Logger(new Font("Calibri", Font.PLAIN, 11));
+            Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf");
             priceMap = Calc.getPrice(Constants.GOLD_ID, Constants.BRACELET_ID);
             Mouse.setSpeed(Mouse.Speed.VERY_FAST);
             startTime = System.currentTimeMillis();
@@ -119,11 +122,12 @@ public class Crafter extends XScript implements Script, MouseListener {
 
     @Override
     public void exit() {
+        Logger.remove();
         showPaint = true;
         paintMouse = false;
         sleep(100);
         Utilities.savePaint(0, 388, 520, 140);
-        System.out.println("Thank you for using Nathan's Bracelet Crafter!");
+        Logger.log("Thank you for using Nathan's Bracelet Crafter!");
     }
 
     @Override
@@ -133,6 +137,14 @@ public class Crafter extends XScript implements Script, MouseListener {
         if (currentNode != null && debug) {
             g.setFont(font);
             g.drawString("Current node: " + currentNode, 5, 85);
+        }
+
+        if (paintMouse) {
+            Point mouse = Mouse.getLocation();
+            g.setColor(black);
+            g.setStroke(stroke);
+            g.drawLine(mouse.x, 0, mouse.x, 550);
+            g.drawLine(0, mouse.y, 775, mouse.y);
         }
 
         if (Game.isLoggedIn() && showPaint && sd != null) {
@@ -159,16 +171,9 @@ public class Crafter extends XScript implements Script, MouseListener {
             g.drawString(Time.format(timeTNL), 316, 458);
             g.setFont(lithos_b);
             g.drawString("v"+Crafter.class.getAnnotation(Manifest.class).version(), 253, 425);
-            g.setFont(font3);
+            g.setFont(lithos_b_small);
             g.drawString("Paint by Maxmm", 4, 519);
             g.drawString("Script by NathanTehBeast", 358, 519);
-        }
-        if (paintMouse) {
-            Point mouse = Mouse.getLocation();
-            g.setColor(black);
-            g.setStroke(stroke);
-            g.drawLine(mouse.x, 0, mouse.x, 550);
-            g.drawLine(0, mouse.y, 775, mouse.y);
         }
     }
 

@@ -2,13 +2,14 @@ package org.nathantehbeast.api.tools;
 
 
 import org.nathantehbeast.api.framework.Condition;
+import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.methods.Environment;
 import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.widget.Bank;
 import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.Area;
-import org.powerbot.game.api.wrappers.Tile;
+import org.powerbot.game.api.wrappers.map.TilePath;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -39,33 +40,34 @@ public final class Utilities {
     }
 
     public static boolean waitFor(final Condition c, final long timeout) {
-        final Timer t = new Timer(timeout);
-        while (t.isRunning() && !c.validate()) {
-            sleep(100);
-        }
-        return c.validate();
+        return waitFor(c, 200, timeout);
     }
 
     public static boolean waitFor(final boolean b, final long timeout) {
-        final Timer t = new Timer(timeout);
-        while (t.isRunning() && !b) {
-            sleep(100);
-        }
-        return b;
+        return waitFor(new Condition() {
+            @Override
+            public boolean validate() {
+                return b;
+            }
+        }, timeout);
     }
 
     public static void walkPath(final Tile[] path, final boolean randomize, final boolean reverse) {
+        walkPath(Walking.newTilePath(path), randomize, reverse);
+    }
+
+    public static void walkPath(final TilePath path, final boolean randomize, final boolean reverse) {
         if (randomize) {
             if (reverse) {
-                Walking.newTilePath(path).reverse().randomize(1, 3).traverse();
+                path.reverse().randomize(1, 3).traverse();
             } else {
-                Walking.newTilePath(path).randomize(1, 3).traverse();
+                path.randomize(1, 3).traverse();
             }
         } else {
             if (reverse) {
-                Walking.newTilePath(path).reverse().traverse();
+                path.reverse().traverse();
             } else {
-                Walking.newTilePath(path).traverse();
+                path.traverse();
             }
         }
     }
@@ -83,6 +85,7 @@ public final class Utilities {
         final BufferedImage img = Environment.captureScreen().getSubimage(x, y, w, h);
         try {
             ImageIO.write(img, "png", path);
+            Logger.log("Saved progress report to "+path.getPath());
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -119,7 +122,7 @@ public final class Utilities {
         try {
             return ImageIO.read(new URL(url));
         } catch (IOException e) {
-            System.out.println(e);
+            Logger.log(e.toString());
             return null;
         }
     }
@@ -142,10 +145,10 @@ public final class Utilities {
             Font font = Font.createFont(type, fontUrl.openStream());
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(font);
-            System.out.println("Successfully registered Font: "+font.getFontName());
+            Logger.log("Successfully registered Font: " + font.getFontName());
             return true;
         } catch (Exception e) {
-            System.out.println("Error loading font: "+e.getMessage());
+            Logger.log("Error loading font: " + e.getMessage());
             return false;
         }
     }

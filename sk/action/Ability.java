@@ -1,10 +1,10 @@
 package sk.action;
 
-import java.util.HashMap;
-
+import org.nathantehbeast.api.tools.Logger;
 import org.powerbot.game.api.wrappers.widget.WidgetChild;
-
 import sk.general.Completion;
+
+import java.util.HashMap;
 
 /**
  * Holds information for an Ability that can be placed in the action bar. Refers to any draggable icon in the
@@ -73,7 +73,7 @@ public interface Ability {
 		private static final long serialVersionUID = -4049206619364768012L;
 		
 		public AbilityMap(int size) {
-			System.out.println("Starting up ability map");
+			Logger.log("Starting up ability map");
 		}
 		
 	}

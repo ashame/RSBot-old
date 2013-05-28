@@ -1,6 +1,7 @@
 package org.nathantehbeast.scripts.aiominer.nodes;
 
 import org.nathantehbeast.api.framework.Condition;
+import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Constants;
 import org.powerbot.core.script.job.state.Node;
@@ -43,7 +44,7 @@ public final class Banking extends Node {
                 }
             }, 1500);
             if (loopBank()) {
-                System.out.println("Finished Depositing.");
+                Logger.log("Finished Depositing.");
             } else {
                 loopBank();
             }

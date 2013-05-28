@@ -1,5 +1,6 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
+import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.Bot;
@@ -72,7 +73,7 @@ public class bankItems extends Node {
             }
             if (foodId > 0 && !Inventory.contains(foodId)) {
                 if (Bank.getItem(foodId) == null) {
-                    System.out.println("Bot Stopped. Out of food.");
+                    Logger.log("Bot Stopped. Out of food.");
                     System.out.println("\007\007\007");
                     Bot.context().getScriptHandler().stop();
                 }

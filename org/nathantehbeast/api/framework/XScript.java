@@ -1,5 +1,6 @@
 package org.nathantehbeast.api.framework;
 
+import org.nathantehbeast.api.tools.Logger;
 import org.powerbot.core.Bot;
 import org.powerbot.core.event.listeners.PaintListener;
 import org.powerbot.core.script.ActiveScript;
@@ -32,7 +33,7 @@ public abstract class XScript extends ActiveScript implements PaintListener {
             for (XNode node : nodes) {
                 if (!container.contains(node)) {
                     container.add(node);
-                    System.out.println("Providing: "+node);
+                    Logger.log("Providing: "+node);
                 }
             }
         }
@@ -43,7 +44,7 @@ public abstract class XScript extends ActiveScript implements PaintListener {
             for (XNode node : nodes) {
                 if (container.contains(node)) {
                     container.remove(node);
-                    System.out.println("Revoking: "+node);
+                    Logger.log("Revoking: "+node);
                 }
             }
         }
@@ -52,7 +53,7 @@ public abstract class XScript extends ActiveScript implements PaintListener {
     @Override
     public void onStart() {
         if (!setup()) {
-            System.out.println("There was an error starting the script. Stopping.");
+            Logger.log("There was an error starting the script. Stopping.");
             stop();
         }
     }
@@ -81,7 +82,7 @@ public abstract class XScript extends ActiveScript implements PaintListener {
             }
             poll();
         } catch (Exception e) {
-            System.out.println("Timer pls fix internal errors");
+            Logger.log("Timer pls fix internal errors");
         }
         return delay;
     }

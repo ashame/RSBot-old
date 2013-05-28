@@ -1,6 +1,7 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.tools.Calc;
+import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.api.tools.MCamera;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.guardKiller.GuardKiller;
@@ -54,7 +55,7 @@ public class openBank extends Node {
                 try {
                     Bank.open();
                 } catch (NullPointerException ne) {
-                    System.out.println("Error while opening bank: " + ne.getMessage());
+                    Logger.log("Error while opening bank: " + ne.getMessage());
                 }
                 Utilities.waitFor(Bank.isOpen(), 5000);
             } else if (!Calc.isOnScreen(bank)) {

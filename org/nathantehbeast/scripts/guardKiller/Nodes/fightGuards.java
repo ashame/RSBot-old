@@ -1,6 +1,7 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.tools.Calc;
+import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.api.tools.MCamera;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.guardKiller.GuardKiller;
@@ -49,7 +50,7 @@ public class fightGuards extends Node {
                         Utilities.waitFor(Players.getLocal().getInteracting() != null, 800);
                     }
                 } catch (NullPointerException ne) {
-                    System.out.println("Error while attacking guard (possibly already dead?): " + ne.getMessage());
+                    Logger.log("Error while attacking guard (possibly already dead?): " + ne.getMessage());
                 }
             } else {
                 MCamera.turnTo(guard, 5);

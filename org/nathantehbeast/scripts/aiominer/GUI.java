@@ -145,6 +145,7 @@ public class GUI extends JFrame {
         Main.setStartTile();
         Main.startTimer();
         Main.setRadius((int) radius.getValue());
+        Logger.log("Radius set to "+radius.getValue());
         Main.setSkillData();
         Main.provide(new Mine((Ore) ore.getSelectedItem(), Players.getLocal().getLocation(), (int) radius.getValue()));
         if (powermine.isSelected()) {

@@ -92,12 +92,8 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     @Override
     public void onStart() {
         new Logger(new Font("Calibri", Font.PLAIN, 11));
-        if (Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf")) {
-            Logger.log("Successfully loaded font: Jokerman");
-        }
-        if (Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf")) {
-            Logger.log("Successfully loaded font: Lithos Pro Regular");
-        }
+        Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf");
+        Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf");
         Mouse.setSpeed(Mouse.Speed.VERY_FAST);
         gui = new GUI();
         Logger.log("You are using version " + version);
@@ -138,7 +134,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         Logger.remove();
         sleep(1000);
         Utilities.savePaint(0, 388, 520, 140);
-        System.out.println("Thanks for using Nathan's AIO Miner!");
+        Logger.log("Thanks for using Nathan's AIO Miner!");
     }
 
     @Override
@@ -209,6 +205,14 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
             }
         }
 
+        if (paintMouse) {
+            Point mouse = Mouse.getLocation();
+            g2d.setColor(black);
+            g2d.setStroke(stroke);
+            g2d.drawLine(mouse.x, 0, mouse.x, 550);
+            g2d.drawLine(0, mouse.y, 775, mouse.y);
+        }
+
         if (sd != null && showPaint) { //Main paint
             long oresHour = (int) ((3600000.0 / runTime) * oresMined);
             long ttl = (long) ((double) Skill.MINING.getExperienceRequired() / (double) ((int) ((3600000.0 / runTime) * sd.experience(Skills.MINING))) * 3600000);
@@ -224,13 +228,6 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
             g2d.drawString("Script by NathanTehBeast", 359, 519);
             g2d.drawString("Paint by Maxmm", 6, 519);
             g2d.drawString("v"+Main.class.getAnnotation(Manifest.class).version(), 319, 425);
-        }
-        if (paintMouse) {
-            Point mouse = Mouse.getLocation();
-            g2d.setColor(black);
-            g2d.setStroke(stroke);
-            g2d.drawLine(mouse.x, 0, mouse.x, 550);
-            g2d.drawLine(0, mouse.y, 775, mouse.y);
         }
     }
 
@@ -252,12 +249,10 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     public static void setRadius(int r) {
         radius = r;
-        Logger.log("Radius set to "+r);
     }
 
     public static void startTimer() {
         startTime = System.currentTimeMillis();
-        Logger.log("Start time set to "+startTime);
     }
 
     public static void setSkillData() {
@@ -277,11 +272,6 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         final Rectangle area = new Rectangle(0, 388, 520, 140);
         if (area.contains(e.getPoint())) {
             showPaint = !showPaint;
-            if (showPaint) {
-                Logger.log("Showing paint.");
-            } else {
-                Logger.log("Hiding paint.");
-            }
         }
     }
 

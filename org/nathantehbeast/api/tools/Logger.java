@@ -52,6 +52,7 @@ public class Logger {
         JScrollPane scrollPane = new JScrollPane();
         frame = new JFrame();
         frame.setLayout(new BorderLayout());
+        final Window parent = JFrame.getWindows()[0];
 
         textArea = new JTextArea();
 
@@ -62,15 +63,19 @@ public class Logger {
         textArea.setForeground(foreground);
         textArea.setEditable(false);
 
+        int width = parent.getWidth();
+        int height = parent.getHeight();
+
         scrollPane.setViewportView(textArea);
-        scrollPane.setPreferredSize(new Dimension(765, 150));
+        scrollPane.setPreferredSize(new Dimension(width, 150));
 
         frame.getContentPane().add(scrollPane, BorderLayout.SOUTH);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.getWindows()[0].add(frame.getContentPane(), BorderLayout.SOUTH);
-        frame.getWindows()[0].setSize(765, 760);
+        parent.add(frame.getContentPane(), BorderLayout.SOUTH);
+        parent.setSize(width, height + 150);
+        parent.setMinimumSize(new Dimension(width, height+150));
         frame.pack();
-        log("Successfully attached console to RSBot");
+        log("Successfully attached console to "+parent.getName());
     }
 
     public static void log(String s) {
@@ -80,9 +85,13 @@ public class Logger {
     }
 
     public static void remove() {
-        frame.getWindows()[0].remove(frame.getContentPane());
-        System.out.println("Removing log pane");
-        frame.getWindows()[0].setSize(765, 612);
-        System.out.println("Restoring RSBot");
+        final Window parent = JFrame.getWindows()[0];
+        int width = parent.getWidth();
+        int height = parent.getHeight();
+        parent.remove(frame.getContentPane());
+        parent.setSize(width, height - 150);
+        parent.setMinimumSize(new Dimension(width, height-150));
+        parent.pack();
+        Logger.log("Removing log pane");
     }
 }

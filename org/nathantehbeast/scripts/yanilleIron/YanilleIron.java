@@ -2,6 +2,7 @@ package org.nathantehbeast.scripts.yanilleIron;
 
 import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.tools.Calc;
+import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.yanilleIron.Nodes.*;
 import org.powerbot.core.Bot;
@@ -25,7 +26,6 @@ import org.powerbot.game.api.methods.widget.WidgetCache;
 import org.powerbot.game.api.util.Filter;
 import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.Tile;
-import org.powerbot.game.api.wrappers.map.TilePath;
 import org.powerbot.game.api.wrappers.node.Item;
 import org.powerbot.game.client.Client;
 import sk.action.ActionBar;
@@ -47,7 +47,7 @@ import java.util.Map;
         authors             = "NathanTehBeast",
         name                = "YanilleIron",
         description         = "Mines iron at yanille, option to powermine.",
-        version             = 1.26,
+        version             = 1.27,
         topic               = 976673,
         instances           = 10,
         website             = "http://www.powerbot.org/community/topic/976673-yanilleiron-actionbar-dropping-powermining-support-banking-support/")
@@ -83,8 +83,8 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
     public static ArrayList<Item> toDrop = new ArrayList<>();
     private static Map<Integer, Integer> prices;
     public static int world;
-    TilePath path = new TilePath(new Tile[]{new Tile(0, 0, 0)});
-    Timer t = new Timer(4000000);
+    Timer t = new Timer(System.currentTimeMillis());
+
     public static final Filter<Item> itemFilter = new Filter<Item>() {
         @Override
         public boolean accept(Item i) {
@@ -151,6 +151,7 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
 
     @Override
     public void onStart() {
+        new Logger(new Font("Calibri", Font.PLAIN, 11));
         WidgetCache.purge();
         client = Bot.client();
         while (Game.getClientState() != Game.INDEX_MAP_LOADED) {
@@ -199,29 +200,41 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
         }
         if (msg.contains("just found a sapphire")) {
             sapphiresMined++;
+            Logger.log("Just mined a sapphire!");
         }
         if (msg.contains("just found a ruby")) {
             rubiesMined++;
+            Logger.log("Just mined a ruby!");
         }
         if (msg.contains("just found an emerald")) {
             emeraldsMined++;
+            Logger.log("Just mined an emerald!");
         }
         if (msg.contains("just found a diamond")) {
             diamondsMined++;
+            Logger.log("Just mined a diamond!");
         }
     }
 
-    private final Color color1 = new Color(255, 255, 255);
-    private final Color color2 = new Color(0, 0, 0);
+    private static final Color color1 = new Color(255, 255, 255);
+    private static final Color color2 = new Color(0, 0, 0);
 
-    private final BasicStroke stroke1 = new BasicStroke(1);
+    private static final BasicStroke stroke1 = new BasicStroke(1);
 
-    private final Font font1 = new Font("Arial", 0, 11);
+    private static final Font font1 = new Font("Arial", 0, 11);
 
-    private final Image img1 = Utilities.getImage("http://puu.sh/32biT.jpg");
+    private static final Image img1 = Utilities.getImage("http://puu.sh/32biT.jpg");
+    private static final BasicStroke stroke = new BasicStroke(2);
 
     @Override
     public void onRepaint(Graphics g1) {
+        Graphics2D g = (Graphics2D) g1;
+        Point mouse = Mouse.getLocation();
+        g.setColor(color2);
+        g.setStroke(stroke);
+        g.drawLine(mouse.x, 0, mouse.x, 550);
+        g.drawLine(0, mouse.y, 775, mouse.y);
+
         if (!hide) {
         runTime = System.currentTimeMillis() - startTime;
         levelsGained = Skills.getRealLevel(Skills.MINING) - startLevel;
@@ -235,7 +248,7 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
         profitEarned = gemPrice + (oresMined * ironPrice);
         profitHour = (int) ((3600000.0 / runTime) * profitEarned);
 
-        Graphics2D g = (Graphics2D) g1;
+
         g.setRenderingHints(antialiasing);
 
         g.drawImage(img1, -2, 388, null);
@@ -259,7 +272,6 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
         g.drawRect(480, 404, 22, 22);
         }
         if (hide) {
-            Graphics2D g = (Graphics2D) g1;
             g.fillRect(480, 404, 22, 22);
             g.setColor(Color.red);
             g.setStroke(stroke1);
