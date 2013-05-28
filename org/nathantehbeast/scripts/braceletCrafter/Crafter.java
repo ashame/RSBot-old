@@ -15,6 +15,7 @@ import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.input.Mouse;
 import org.powerbot.game.api.methods.tab.Skills;
 import org.powerbot.game.api.util.SkillData;
+import org.powerbot.game.api.util.Time;
 import org.powerbot.game.api.util.Timer;
 
 import java.awt.*;
@@ -33,8 +34,8 @@ import java.util.HashMap;
 @Manifest(
         authors             = "NathanTehBeast",
         name                = "BraceletCrafter",
-        description         = "Crafts Gold Bars into Bracelets at Edgeville.",
-        version             = 1.31,
+        description         = "Crafts Gold Bars into Bracelets at Edgeville. Start in NE corner of Edgeville bank with gold bars either in the bank or inventory.",
+        version             = 1.33,
         topic               = 948733,
         instances           = 10,
         website             = "http://www.powerbot.org/community/topic/948733-braceletcrafter/"
@@ -52,15 +53,20 @@ public class Crafter extends XScript implements Script, MouseListener {
     private int a;
 
     private volatile boolean showPaint = true;
+    private volatile boolean paintMouse = true;
+    public static boolean debug = false;
     private Timer ss = new Timer(System.currentTimeMillis());
 
-    private final RenderingHints antialiasing = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    private final Color color1 = new Color(255, 255, 255);
-    private final Color color2 = new Color(0, 0, 0);
-    private final BasicStroke stroke1 = new BasicStroke(1);
-    private final Font font1 = new Font("Arial", 1, 15);
-    private final Font font2 = new Font("Arial", 0, 11);
-    private final Font font3 = new Font("Arial", 0, 10);
+    private static final RenderingHints antialiasing = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    private static final Color color1 = new Color(208, 209, 191);
+    private static final Font font  = new Font("Calibri", Font.PLAIN, 12);
+    private static final Font lithos = new Font("Lithos Pro Regular", 0, 10);
+    private static final Font lithos_b = new Font("Lithos Pro Regular", Font.BOLD, 10);
+    private static final Font font3 = new Font("Lithos Pro Regular", 1, 9);
+    private static final Color black = Color.BLACK;
+    private static final BasicStroke stroke = new BasicStroke(2);
+
+    private final Image paint = Utilities.getImage("http://puu.sh/32cKT.jpg");
 
     @Override
     protected boolean setup() {
@@ -100,23 +106,35 @@ public class Crafter extends XScript implements Script, MouseListener {
             Walking.setRun(true);
         }
         if (((ss.getElapsed() / 1000) - ssTimer) > 3600) {
+            boolean p = showPaint;
+            showPaint = true;
+            paintMouse = false;
+            sleep(100);
             Utilities.savePaint(0, 0, 765, 48);
+            showPaint = p;
+            paintMouse = true;
             ssTimer = System.currentTimeMillis();
         }
     }
 
     @Override
     public void exit() {
-        Utilities.savePaint(0, 0, 765, 50);
+        showPaint = true;
+        paintMouse = false;
+        sleep(100);
+        Utilities.savePaint(0, 388, 520, 140);
         System.out.println("Thank you for using Nathan's Bracelet Crafter!");
     }
 
     @Override
     public void paint(Graphics g1) {
-        if (currentNode != null) {
-            Graphics2D g2d = (Graphics2D) g1;
-            g2d.drawString("Current node: " + currentNode, 5, 100);
+        Graphics2D g = (Graphics2D)g1;
+
+        if (currentNode != null && debug) {
+            g.setFont(font);
+            g.drawString("Current node: " + currentNode, 5, 85);
         }
+
         if (Game.isLoggedIn() && showPaint && sd != null) {
             int expGained = sd.experience(Skills.CRAFTING);
             int levelsGained = sd.level(Skills.CRAFTING);
@@ -128,38 +146,35 @@ public class Crafter extends XScript implements Script, MouseListener {
             int profitHour = (int) ((3600000.0 / runTime) * profit);
             int craftHour = (int) ((3600000.0 / runTime) * crafted);
 
-            Graphics2D g = (Graphics2D) g1;
             g.setRenderingHints(antialiasing);
 
+            g.drawImage(paint, -3, 388, null);
+            g.setFont(lithos);
             g.setColor(color1);
-            g.fillRect(0, 0, 765, 50);
-            g.setColor(color2);
-            g.setStroke(stroke1);
-            g.drawRect(0, 0, 765, 50);
-            g.setFont(font1);
-            g.drawString("BraceletCrafter", 5, 15);
-            g.setFont(font2);
-            if (levelsGained > 0) {
-                g.drawString("Crafting Level:" + Skills.getRealLevel(Skills.CRAFTING) + " (+" + levelsGained + ")", 5, 30);
-            } else {
-                g.drawString("Crafting Level: " + Skills.getRealLevel(Skills.CRAFTING), 5, 30);
-            }
-            g.drawString("EXP Gained: " + expGained + " (" + sd.experience(SkillData.Rate.HOUR, Skills.CRAFTING) + "/hr)", 5, 45);
-            g.drawString("Bracelets Crafted: " + crafted + " (" + craftHour + "/hr)", 219, 15);
-            g.drawString("Profit Earned: " + profit + " (" + profitHour + "/hr)", 219, 30);
-            g.drawString("EXP TNL: " + expTNL, 219, 45);
+            g.drawString(Skills.getRealLevel(Skills.CRAFTING) + " (+" + levelsGained + ")", 180, 444);
+            g.drawString(expGained + " (" + sd.experience(SkillData.Rate.HOUR, Skills.CRAFTING) + "/h)", 125, 457);
+            g.drawString(crafted + " (" + craftHour + "/h)", 170, 470);
+            g.drawString(profit + " (" + profitHour + "/h)", 146, 482);
+            g.drawString(Time.format(runTime), 316, 444);
+            g.drawString(Time.format(timeTNL), 316, 458);
+            g.setFont(lithos_b);
+            g.drawString("v"+Crafter.class.getAnnotation(Manifest.class).version(), 253, 425);
             g.setFont(font3);
-            g.drawString("by NathanTehBeast", 666, 45);
-            g.drawString("Version: " + Crafter.class.getAnnotation(Manifest.class).version(), 666, 15);
-            g.setFont(font2);
-            g.drawString("Time Ran: " + Calc.formatTime(runTime), 429, 15);
-            g.drawString("Time TNL: " + Calc.formatTime(timeTNL), 429, 45);
+            g.drawString("Paint by Maxmm", 4, 519);
+            g.drawString("Script by NathanTehBeast", 358, 519);
+        }
+        if (paintMouse) {
+            Point mouse = Mouse.getLocation();
+            g.setColor(black);
+            g.setStroke(stroke);
+            g.drawLine(mouse.x, 0, mouse.x, 550);
+            g.drawLine(0, mouse.y, 775, mouse.y);
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        Rectangle paint = new Rectangle(0, 0, 765, 50);
+        final Rectangle paint = new Rectangle(0, 388, 520, 140);
         if (paint.contains(e.getPoint())) {
             showPaint = !showPaint;
         }

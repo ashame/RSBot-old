@@ -218,7 +218,7 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
 
     private final Font font1 = new Font("Arial", 0, 11);
 
-    private final Image img1 = Utilities.getImage("http://i.imgur.com/nQIYcET.png");
+    private final Image img1 = Utilities.getImage("http://puu.sh/32biT.jpg");
 
     @Override
     public void onRepaint(Graphics g1) {

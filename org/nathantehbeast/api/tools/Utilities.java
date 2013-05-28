@@ -144,7 +144,7 @@ public final class Utilities {
             ge.registerFont(font);
             System.out.println("Successfully registered Font: "+font.getFontName());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error loading font: "+e.getMessage());
         }
     }
 }

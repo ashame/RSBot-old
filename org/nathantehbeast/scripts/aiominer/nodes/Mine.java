@@ -63,7 +63,7 @@ public final class Mine extends Node {
                 Utilities.waitFor(new Condition() {
                     @Override
                     public boolean validate() {
-                        return Players.getLocal().getAnimation() != -1;
+                        return Players.getLocal().getAnimation() != -1 || !ROCK.validate();
                     }
                 }, 3000);
             }

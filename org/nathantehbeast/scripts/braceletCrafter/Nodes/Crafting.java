@@ -18,7 +18,8 @@ import org.powerbot.game.api.wrappers.node.SceneObject;
  * Time: 4:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Crafting implements XNode{
+
+public class Crafting implements XNode {
 
     private Area furnaceArea;
     private int goldId;
@@ -38,31 +39,32 @@ public class Crafting implements XNode{
     @Override
     public void execute() {
         final SceneObject FURNACE = SceneEntities.getNearest(furnaceId);
-        if (FURNACE != null && Calc.isOnScreen(FURNACE) && FURNACE.interact("Smelt")) {
+        if (!Widgets.get(1370).validate() && FURNACE != null && Calc.isOnScreen(FURNACE) && FURNACE.interact("Smelt")) {
             Utilities.waitFor(new Condition() {
                 @Override
                 public boolean validate() {
                     return Widgets.get(1370).validate();
                 }
-            }, 3000);
-            if (Widgets.get(1370).validate()) {
-                if (!Widgets.get(1370, 56).getText().equals("Gold bracelet")) {
-                    Widgets.get(1371, 44).click(true);
-                    Utilities.waitFor(new Condition() {
-                        @Override
-                        public boolean validate() {
-                            return Widgets.get(1370, 56).getText().equals("Gold bracelet");
-                        }
-                    }, 2000);
-                }
-                Widgets.get(1370, 37).click(true);
+            }, 5000);
+        }
+        if (Widgets.get(1370).validate()) { //Crafting Widget
+            if (!Widgets.get(1370, 56).getText().equals("Gold bracelet")) { //Title of item in crafting widget
+                Widgets.get(1370, 44).click(true); //Gold bracelet
                 Utilities.waitFor(new Condition() {
                     @Override
                     public boolean validate() {
-                        return Players.getLocal().getAnimation() != -1;
+                        return Widgets.get(1370, 56).getText().equals("Gold bracelet");
                     }
-                }, 1500);
+                }, 2000);
             }
+            Widgets.get(1370, 37).click(true); //Smelt button
+            Utilities.waitFor(new Condition() {
+                @Override
+                public boolean validate() {
+                    return Players.getLocal().getAnimation() != -1;
+                }
+            }, 1500);
         }
     }
 }
+

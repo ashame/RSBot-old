@@ -30,6 +30,7 @@ public class GUI extends JFrame {
     public DefaultComboBoxModel<Ore> model;
     public JCheckBox powermine;
     public JCheckBox bank;
+    public JCheckBox mouse;
     public JSpinner radius;
     public JLabel rLabel;
 
@@ -68,6 +69,10 @@ public class GUI extends JFrame {
         bank.setToolTipText("To be implemented later");
         bank.setSelected(false);
         bank.setEnabled(false);
+
+        mouse = new JCheckBox("Show Mouse");
+        mouse.setToolTipText("Shows a simple crosshair for mouse location");
+        mouse.setSelected(true);
 
         radius = new JSpinner();
         radius.setModel(new SpinnerNumberModel(1, 1, 30, 1));
@@ -111,6 +116,8 @@ public class GUI extends JFrame {
         options.add(Box.createVerticalGlue());
         options.add(bank);
         options.add(Box.createVerticalGlue());
+        options.add(mouse);
+        options.add(Box.createVerticalGlue());
 
         base1.add(ores, BorderLayout.NORTH);
         base2.add(options, BorderLayout.NORTH);
@@ -132,7 +139,8 @@ public class GUI extends JFrame {
     private void start(ActionEvent ae) {
         setVisible(false);
         Main.setOre((Ore) ore.getSelectedItem());
-        Main.setPowermine(powermine.isSelected());
+        //Main.setPowermine(powermine.isSelected());
+        Main.paintMouse = mouse.isSelected();
         Main.setStartTile();
         Main.startTimer();
         Main.setRadius((int) radius.getValue());

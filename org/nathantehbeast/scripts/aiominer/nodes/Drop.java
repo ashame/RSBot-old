@@ -3,8 +3,8 @@ package org.nathantehbeast.scripts.aiominer.nodes;
 import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
+import org.nathantehbeast.scripts.aiominer.Main;
 import org.powerbot.core.script.job.state.Node;
-import org.powerbot.game.api.methods.input.Keyboard;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.methods.widget.ChatOptions;
 import org.powerbot.game.api.util.Filter;
@@ -12,9 +12,10 @@ import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.node.Item;
 import sk.action.ActionBar;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 
 /**
@@ -28,6 +29,13 @@ public final class Drop extends Node {
 
     private boolean powermine;
     private Ore ore;
+    private final List<Item> toDrop = Collections.synchronizedList(new ArrayList<Item>());
+    private final Filter<Item> FILTER = new Filter<Item>() {
+        @Override
+        public boolean accept(Item item) {
+            return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze")&& item.getId() != ore.getId();
+        }
+    };
 
     /**
      * @param powermine To drop or not to drop
@@ -38,14 +46,6 @@ public final class Drop extends Node {
         this.ore = ore;
     }
 
-
-    final Filter<Item> FILTER = new Filter<Item>() {
-        @Override
-        public boolean accept(Item item) {
-            return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze") && item.getId() != ore.getId();
-        }
-    };
-
     @Override
     public boolean activate() {
         return powermine && Inventory.isFull();
@@ -53,7 +53,6 @@ public final class Drop extends Node {
 
     @Override
     public void execute() {
-        final List<Item> toDrop = new ArrayList<>();
         final Timer t = new Timer(10000);
         if (!ActionBar.isExpanded()) {
             ActionBar.setExpanded(true);
@@ -77,19 +76,32 @@ public final class Drop extends Node {
             ActionBar.useSlot(0);
             sleep(80, 100);
         }
-        for (Item item : Inventory.getItems(FILTER)) {
-            if (!toDrop.contains(item)) {
-                toDrop.add(item);
+        synchronized (toDrop) {
+            for (Item item : Inventory.getItems(FILTER)) {
+                if (!toDrop.contains(item)) {
+                    toDrop.add(item);
+                    Main.log("Added " + item.getName() + " to drop list.");
+                }
             }
-        }
-        for (Item item : toDrop) {
-            if (item.getWidgetChild().interact("drop")) {
-                toDrop.remove(item);
-                sleep(150);
+            for (ListIterator<Item> li = toDrop.listIterator() ; li.hasNext();) {
+                Item i = li.next();
+                if (i.getWidgetChild().interact("Drop")) {
+                    Main.log("Attempting to drop " + i.getStackSize() + "x " + i.getName());
+                    sleep(300);
+                }
             }
+            toDrop.clear();
+            Main.log("Successfully cleared drop list.");
         }
         if (Inventory.contains(ore.getId())) {
-            Keyboard.sendKey((char) KeyEvent.VK_ENTER);
+            ActionBar.setExpanded(false);
+            Utilities.waitFor(new Condition() {
+                @Override
+                public boolean validate() {
+                    return !ActionBar.isExpanded();
+                }
+            }, 2000);
+            ActionBar.setExpanded(true);
         }
     }
 }
