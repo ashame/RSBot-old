@@ -87,21 +87,20 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     private static long startTime;
     private static SkillData sd;
     private GUI gui;
-    public static Logger logger;
     public static boolean debug = false;
 
     @Override
     public void onStart() {
-        logger = new Logger();
+        new Logger(new Font("Calibri", Font.PLAIN, 11));
         if (Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf")) {
-            log("Successfully loaded font: Jokerman");
+            Logger.log("Successfully loaded font: Jokerman");
         }
         if (Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf")) {
-            log("Successfully loaded font: Lithos Pro Regular");
+            Logger.log("Successfully loaded font: Lithos Pro Regular");
         }
         Mouse.setSpeed(Mouse.Speed.VERY_FAST);
         gui = new GUI();
-        log("You are using version " + version);
+        Logger.log("You are using version " + version);
     }
 
     @Override
@@ -126,7 +125,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
                 showPaint = true;
             }
         } catch (Exception e) {
-            log("Timer plx fix internal errors");
+            Logger.log("Timer plx fix internal errors");
         }
         return 600;
     }
@@ -139,7 +138,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         Logger.remove();
         sleep(1000);
         Utilities.savePaint(0, 388, 520, 140);
-        log("Thanks for using Nathan's AIO Miner!");
+        System.out.println("Thanks for using Nathan's AIO Miner!");
     }
 
     @Override
@@ -243,8 +242,9 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     public static boolean setStartTile() {
         try {
             startTile = Players.getLocal().getLocation();
+            Logger.log("Central tile set to "+startTile);
         } catch (Exception e) {
-            System.out.println("Error while setting central point.");
+            Logger.log("Error while setting central tile.");
             return false;
         }
         return startTile == Players.getLocal().getLocation();
@@ -252,19 +252,22 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     public static void setRadius(int r) {
         radius = r;
+        Logger.log("Radius set to "+r);
     }
 
     public static void startTimer() {
         startTime = System.currentTimeMillis();
+        Logger.log("Start time set to "+startTime);
     }
 
     public static void setSkillData() {
         sd = new SkillData();
+        Logger.log("Initializing SkillData.");
     }
 
     public static void provide(Node... n) {
         for (Node node : n) {
-            System.out.println("Providing: "+node);
+            Logger.log("Providing: "+node);
             nodes.add(node);
         }
     }
@@ -274,6 +277,11 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         final Rectangle area = new Rectangle(0, 388, 520, 140);
         if (area.contains(e.getPoint())) {
             showPaint = !showPaint;
+            if (showPaint) {
+                Logger.log("Showing paint.");
+            } else {
+                Logger.log("Hiding paint.");
+            }
         }
     }
 
@@ -295,9 +303,5 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     @Override
     public void mouseExited(MouseEvent e) {
         //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public static void log(String s) {
-        logger.log(s);
     }
 }

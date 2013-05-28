@@ -14,26 +14,54 @@ import java.util.Calendar;
  */
 public class Logger {
 
-    private JTextArea textArea;
+    private static JTextArea textArea;
     private static JFrame frame;
-    private static Color background = new Color(43, 43, 43);
-    private static Color foreground = new Color(168, 182, 197);
+    private static Font defaultFont = new Font("Calibri", Font.PLAIN, 12);
+    private static Color defaultBackground = new Color(43, 43, 43);
+    private static Color defaultForeground = new Color(168, 182, 197);
 
     public Logger() {
+        new Logger(defaultFont, defaultBackground, defaultForeground);
+    }
+
+    public Logger(final Font font) {
+        new Logger(font, defaultBackground, defaultForeground);
+    }
+
+    public Logger(final Color color, final boolean background) {
+        if (background) {
+            new Logger(defaultFont, color, defaultForeground);
+        } else {
+            new Logger(defaultFont, defaultBackground, color);
+        }
+    }
+
+    public Logger(final Font font, final Color color, final boolean background) {
+        if (background) {
+            new Logger(font, color, defaultForeground);
+        } else {
+            new Logger(font, defaultBackground, color);
+        }
+    }
+
+    public Logger(final Color background, final Color foreground) {
+        new Logger(defaultFont, background, foreground);
+    }
+
+    public Logger(final Font font, final Color background, final Color foreground) {
         JScrollPane scrollPane = new JScrollPane();
         frame = new JFrame();
         frame.setLayout(new BorderLayout());
 
         textArea = new JTextArea();
 
-        textArea.setFont(new Font("Calibri", Font.PLAIN, 12));
+        textArea.setFont(font);
         textArea.setWrapStyleWord(true);
         textArea.setLineWrap(true);
         textArea.setBackground(background);
         textArea.setForeground(foreground);
         textArea.setEditable(false);
 
-        scrollPane.add(Box.createVerticalGlue());
         scrollPane.setViewportView(textArea);
         scrollPane.setPreferredSize(new Dimension(765, 150));
 
@@ -45,7 +73,7 @@ public class Logger {
         log("Successfully attached console to RSBot");
     }
 
-    public void log(String s) {
+    public static void log(String s) {
         textArea.append("[" + new SimpleDateFormat("hh:mm:ss z").format(Calendar.getInstance().getTime()) + "] " + s + System.getProperty("line.separator"));
         textArea.scrollRectToVisible(new Rectangle(0, textArea.getHeight() - 2, 1, 1));
         System.out.println(s);

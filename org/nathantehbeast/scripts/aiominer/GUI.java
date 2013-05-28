@@ -1,5 +1,6 @@
 package org.nathantehbeast.scripts.aiominer;
 
+import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
 import org.nathantehbeast.scripts.aiominer.nodes.Drop;
 import org.nathantehbeast.scripts.aiominer.nodes.Mine;
@@ -139,7 +140,7 @@ public class GUI extends JFrame {
     private void start(ActionEvent ae) {
         setVisible(false);
         Main.setOre((Ore) ore.getSelectedItem());
-        //Main.setPowermine(powermine.isSelected());
+        Logger.log("Mining: " + ore.getSelectedItem());
         Main.paintMouse = mouse.isSelected();
         Main.setStartTile();
         Main.startTimer();
