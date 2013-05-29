@@ -29,10 +29,32 @@ public final class Drop extends Node {
     private boolean powermine;
     private Ore ore;
     private final List<Item> toDrop = Collections.synchronizedList(new ArrayList<Item>());
+
     private final Filter<Item> FILTER = new Filter<Item>() {
         @Override
         public boolean accept(Item item) {
             return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze")&& item.getId() != ore.getId();
+        }
+    };
+
+    private static final Condition CAN_CONTINUE = new Condition() {
+        @Override
+        public boolean validate() {
+            return !ChatOptions.canContinue();
+        }
+    };
+
+    private static final Condition ACTIONBAR_EXPANDED = new Condition() {
+        @Override
+        public boolean validate() {
+            return ActionBar.isExpanded();
+        }
+    };
+
+    private static final Condition ACTIONBAR_CLOSED = new Condition() {
+        @Override
+        public boolean validate() {
+            return !ActionBar.isExpanded();
         }
     };
 
@@ -55,21 +77,11 @@ public final class Drop extends Node {
         final Timer t = new Timer(10000);
         if (!ActionBar.isExpanded()) {
             ActionBar.setExpanded(true);
-            Utilities.waitFor(new Condition() {
-                @Override
-                public boolean validate() {
-                    return ActionBar.isExpanded();
-                }
-            }, 1500);
+            Utilities.waitFor(ACTIONBAR_EXPANDED, 1500);
         }
         if (ChatOptions.canContinue()) {
             ChatOptions.getContinueOption().select(true);
-            Utilities.waitFor(new Condition() {
-                @Override
-                public boolean validate() {
-                    return !ChatOptions.canContinue();
-                }
-            }, 3000);
+            Utilities.waitFor(CAN_CONTINUE, 3000);
         }
         while (t.isRunning() && Inventory.contains(ore.getId())) {
             ActionBar.useSlot(0);
@@ -91,12 +103,7 @@ public final class Drop extends Node {
         }
         if (Inventory.contains(ore.getId())) {
             ActionBar.setExpanded(false);
-            Utilities.waitFor(new Condition() {
-                @Override
-                public boolean validate() {
-                    return !ActionBar.isExpanded();
-                }
-            }, 2000);
+            Utilities.waitFor(ACTIONBAR_CLOSED, 2000);
             ActionBar.setExpanded(true);
         } else {
             ActionBar.setExpanded(false);

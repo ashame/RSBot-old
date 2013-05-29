@@ -40,16 +40,19 @@ public final class Utilities {
     }
 
     public static boolean waitFor(final Condition c, final long timeout) {
-        return waitFor(c, 200, timeout);
+        final Timer t = new Timer(timeout);
+        while (t.isRunning() && !c.validate()) {
+            sleep(100);
+        }
+        return c.validate();
     }
 
     public static boolean waitFor(final boolean b, final long timeout) {
-        return waitFor(new Condition() {
-            @Override
-            public boolean validate() {
-                return b;
-            }
-        }, timeout);
+        final Timer t = new Timer(timeout);
+        while (t.isRunning() && !b) {
+            sleep(100);
+        }
+        return b;
     }
 
     public static void walkPath(final Tile[] path, final boolean randomize, final boolean reverse) {

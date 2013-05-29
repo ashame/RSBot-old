@@ -27,6 +27,8 @@ public final class Mine extends Node {
     private Ore ore;
     private Tile center;
     private int radius;
+    private static SceneObject rock;
+    private static SceneObject previousRock;
 
     /**
      * @param ore    Constants.Ore to mine within the radius
@@ -46,27 +48,25 @@ public final class Mine extends Node {
         }
     };
 
+    private static final Condition CONDITION = new Condition() {
+        @Override
+        public boolean validate() {
+            return Players.getLocal().getAnimation() != -1;
+        }
+    };
+
     @Override
     public boolean activate() {
-        final SceneObject ROCK = SceneEntities.getNearest(FILTER);
-        return ROCK != null && !Inventory.isFull() && Utilities.isIdle();
+        return (rock = SceneEntities.getNearest(FILTER)) != null && !Inventory.isFull() && Utilities.isIdle() && !Players.getLocal().isMoving();
     }
 
     @Override
     public void execute() {
-        final SceneObject ROCK = SceneEntities.getNearest(FILTER);
-        if (ROCK != null) {
-            if (!Calc.isOnScreen(ROCK)) {
-                MCamera.turnTo(ROCK, 50);
-            }
-            if (Calc.isOnScreen(ROCK) && ROCK.getLocation().isOnMap() && ROCK.interact("Mine")) {
-                Utilities.waitFor(new Condition() {
-                    @Override
-                    public boolean validate() {
-                        return Players.getLocal().getAnimation() != -1 || !ROCK.validate();
-                    }
-                }, 3000);
-            }
+        if (!Calc.isOnScreen(rock)) {
+            MCamera.turnTo(rock, 50);
+        }
+        if (Calc.isOnScreen(rock) && rock.getLocation().isOnMap() && rock.interact("Mine")) {
+            Utilities.waitFor(CONDITION, 3000);
         }
     }
 }

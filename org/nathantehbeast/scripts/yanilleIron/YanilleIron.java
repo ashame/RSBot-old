@@ -28,7 +28,6 @@ import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.wrappers.node.Item;
 import org.powerbot.game.client.Client;
-import sk.action.ActionBar;
 
 import javax.swing.*;
 import java.awt.*;
@@ -132,12 +131,6 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
         }
         if (Walking.getEnergy() >= 50 && !Walking.isRunEnabled()) {
             Walking.setRun(true);
-        }
-        if (!ActionBar.isExpanded() && pm) {
-            ActionBar.setExpanded(true);
-        }
-        if (ActionBar.isExpanded() && !pm) {
-            ActionBar.setExpanded(false);
         }
         if (Camera.getPitch() < 20 || Camera.getPitch() > 40) {
             Camera.setPitch(30);

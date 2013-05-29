@@ -36,7 +36,7 @@ import java.util.HashMap;
         authors             = "NathanTehBeast",
         name                = "BraceletCrafter",
         description         = "Crafts Gold Bars into Bracelets at Edgeville. Start in NE corner of Edgeville bank with gold bars either in the bank or inventory.",
-        version             = 1.34,
+        version             = 1.35,
         topic               = 948733,
         instances           = 10,
         website             = "http://www.powerbot.org/community/topic/948733-braceletcrafter/"
@@ -160,20 +160,20 @@ public class Crafter extends XScript implements Script, MouseListener {
 
             g.setRenderingHints(antialiasing);
 
-            g.drawImage(paint, -3, 388, null);
+            g.drawImage(paint, -1, 388, null);
             g.setFont(lithos);
             g.setColor(color1);
-            g.drawString(Skills.getRealLevel(Skills.CRAFTING) + " (+" + levelsGained + ")", 180, 444);
-            g.drawString(expGained + " (" + sd.experience(SkillData.Rate.HOUR, Skills.CRAFTING) + "/h)", 125, 457);
-            g.drawString(crafted + " (" + craftHour + "/h)", 170, 470);
-            g.drawString(profit + " (" + profitHour + "/h)", 146, 482);
-            g.drawString(Time.format(runTime), 316, 444);
-            g.drawString(Time.format(timeTNL), 316, 458);
+            g.drawString(Skills.getRealLevel(Skills.CRAFTING) + " (+" + levelsGained + ")", 182, 444);
+            g.drawString(expGained + " (" + sd.experience(SkillData.Rate.HOUR, Skills.CRAFTING) + "/h)", 127, 457);
+            g.drawString(crafted + " (" + craftHour + "/h)", 172, 470);
+            g.drawString(profit + " (" + profitHour + "/h)", 148, 482);
+            g.drawString(Time.format(runTime), 318, 444);
+            g.drawString(Time.format(timeTNL), 318, 458);
             g.setFont(lithos_b);
-            g.drawString("v"+Crafter.class.getAnnotation(Manifest.class).version(), 253, 425);
+            g.drawString("v"+Crafter.class.getAnnotation(Manifest.class).version(), 255, 425);
             g.setFont(lithos_b_small);
-            g.drawString("Paint by Maxmm", 4, 519);
-            g.drawString("Script by NathanTehBeast", 358, 519);
+            g.drawString("Paint by Maxmm", 6, 519);
+            g.drawString("Script by NathanTehBeast", 360, 519);
         }
     }
 

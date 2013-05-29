@@ -12,22 +12,36 @@ import java.util.Calendar;
  * Time: 3:04 AM
  * To change this template use File | Settings | File Templates.
  */
+
 public class Logger {
 
     private static JTextArea textArea;
     private static JFrame frame;
-    private static Font defaultFont = new Font("Calibri", Font.PLAIN, 12);
-    private static Color defaultBackground = new Color(43, 43, 43);
-    private static Color defaultForeground = new Color(168, 182, 197);
+    private static final Font defaultFont = new Font("Calibri", Font.PLAIN, 12);
+    private static final Color defaultBackground = new Color(43, 43, 43);
+    private static final Color defaultForeground = new Color(168, 182, 197);
 
+    /**
+     * Creates a new Logger with the default font, background, and foreground. This should be called only once per script, in the onStart method.
+     * For example: new Logger();
+     */
     public Logger() {
         new Logger(defaultFont, defaultBackground, defaultForeground);
     }
 
+    /**
+     * Creates a new Logger with your specified font, default background color, and foreground color.
+     * @param font The font to use within the log pane.
+     */
     public Logger(final Font font) {
         new Logger(font, defaultBackground, defaultForeground);
     }
 
+    /**
+     * Creates a new Logger with the default font, and your specified color on either the background or the foreground.
+     * @param color The color of either the foreground or background.
+     * @param background Whether to set the color as the background or foreground.
+     */
     public Logger(final Color color, final boolean background) {
         if (background) {
             new Logger(defaultFont, color, defaultForeground);
@@ -36,6 +50,12 @@ public class Logger {
         }
     }
 
+    /**
+     * Creates a new Logger with your specified font, color on either the background or the foreground, and the default color for the other.
+     * @param font The font to use within the log pane.
+     * @param color The color for either the background or foreground
+     * @param background Whether to set the color as the background or foreground
+     */
     public Logger(final Font font, final Color color, final boolean background) {
         if (background) {
             new Logger(font, color, defaultForeground);
@@ -44,10 +64,21 @@ public class Logger {
         }
     }
 
+    /**
+     * Creates a new Logger with the default font, your specified background color, and your specified foreground color.
+     * @param background The color to use for the background.
+     * @param foreground The color to use for the foreground.
+     */
     public Logger(final Color background, final Color foreground) {
         new Logger(defaultFont, background, foreground);
     }
 
+    /**
+     * Creates a new logger with your specified font, background color, and foreground color.
+     * @param font The font to use within the log pane.
+     * @param background The color to use for the background.
+     * @param foreground The color to use for the foreground.
+     */
     public Logger(final Font font, final Color background, final Color foreground) {
         JScrollPane scrollPane = new JScrollPane();
         frame = new JFrame();
@@ -78,12 +109,20 @@ public class Logger {
         log("Successfully attached console to "+parent.getName());
     }
 
+    /**
+     * Logs a string to the pane.
+     * @param s The string to log. It will be displayed as [hh:mm:ss z] Message
+     */
     public static void log(String s) {
         textArea.append("[" + new SimpleDateFormat("hh:mm:ss z").format(Calendar.getInstance().getTime()) + "] " + s + System.getProperty("line.separator"));
         textArea.scrollRectToVisible(new Rectangle(0, textArea.getHeight() - 2, 1, 1));
         System.out.println(s);
     }
 
+    /**
+     * Removes the log pane from RSBot. Call this method on your onStop()
+     * Ex: Logger.remove();
+     */
     public static void remove() {
         final Window parent = JFrame.getWindows()[0];
         int width = parent.getWidth();

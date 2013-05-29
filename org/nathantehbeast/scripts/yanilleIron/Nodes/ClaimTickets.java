@@ -9,6 +9,8 @@ import org.powerbot.game.api.wrappers.node.Item;
 
 public class ClaimTickets extends Node {
 
+    private Item ticket;
+
     @Override
     public boolean activate() {
         return Game.getClientState() == Game.INDEX_MAP_LOADED && Inventory.contains(24154);
@@ -17,12 +19,12 @@ public class ClaimTickets extends Node {
     @Override
     public void execute() {
         if (((Settings.get(1448) & 0xFF00) >>> 8) < 10) {
-            final Item ticket = Inventory.getItem(24154);
+            ticket = Inventory.getItem(24154);
             if (ticket != null && ticket.getWidgetChild().interact("Claim spin")) {
                 sleep(1000);
             }
         } else {
-            final Item ticket = Inventory.getItem(24154);
+            ticket = Inventory.getItem(24154);
             if (ticket != null && ticket.getWidgetChild().interact("Destroy")) {
                 sleep(5000);
                 Keyboard.sendKey('1');

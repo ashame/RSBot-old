@@ -21,6 +21,7 @@ public class Banking implements XNode {
     private int goldId;
     private int braceletId;
     private Area bankArea;
+    private Entity bank;
 
     public Banking(int goldId, int braceletId, Area bankArea) {
         this.goldId = goldId;
@@ -28,30 +29,32 @@ public class Banking implements XNode {
         this.bankArea = bankArea;
     }
 
+    private final Condition DEPOSITED = new Condition() {
+        @Override
+        public boolean validate() {
+            return !Inventory.contains(braceletId);
+        }
+    };
+
+    private final Condition HAS_GOLD = new Condition() {
+        @Override
+        public boolean validate() {
+            return Inventory.contains(goldId);
+        }
+    };
+
     @Override
     public boolean activate() {
-        final Entity BANK = Bank.getNearest();
-        return BANK != null && !Inventory.contains(goldId) && bankArea.contains(Players.getLocal().getLocation());
+        return (bank = Bank.getNearest()) != null && !Inventory.contains(goldId) && bankArea.contains(Players.getLocal().getLocation());
     }
 
     @Override
     public void execute() {
-        final Entity BANK = Bank.getNearest();
-        if (BANK != null && Bank.open()) {
+        if (Bank.open()) {
             if (Bank.depositInventory()) {
-                Utilities.waitFor(new Condition() {
-                    @Override
-                    public boolean validate() {
-                        return !Inventory.contains(braceletId);
-                    }
-                }, 5000);
+                Utilities.waitFor(DEPOSITED, 5000);
                 if (Bank.withdraw(goldId, Bank.Amount.ALL)) {
-                    Utilities.waitFor(new Condition() {
-                        @Override
-                        public boolean validate() {
-                            return Inventory.contains(goldId);
-                        }
-                    }, 5000);
+                    Utilities.waitFor(HAS_GOLD, 5000);
                     Bank.close();
                 }
             }
