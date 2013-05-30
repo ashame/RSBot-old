@@ -2,23 +2,26 @@ package org.nathantehbeast.scripts.aiominer;
 
 
 import org.nathantehbeast.api.framework.Condition;
-import org.nathantehbeast.api.tools.*;
+import org.nathantehbeast.api.framework.XScript;
+import org.nathantehbeast.api.tools.Calc;
+import org.nathantehbeast.api.tools.Logger;
+import org.nathantehbeast.api.tools.Skill;
+import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
-import org.powerbot.core.Bot;
 import org.powerbot.core.event.events.MessageEvent;
 import org.powerbot.core.event.listeners.MessageListener;
-import org.powerbot.core.event.listeners.PaintListener;
-import org.powerbot.core.script.ActiveScript;
+import org.powerbot.core.script.Script;
+import org.powerbot.core.script.job.LoopTask;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.Manifest;
 import org.powerbot.game.api.methods.Calculations;
+import org.powerbot.game.api.methods.Environment;
 import org.powerbot.game.api.methods.Game;
 import org.powerbot.game.api.methods.input.Keyboard;
 import org.powerbot.game.api.methods.input.Mouse;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.node.SceneEntities;
 import org.powerbot.game.api.methods.tab.Skills;
-import org.powerbot.game.api.methods.widget.WidgetCache;
 import org.powerbot.game.api.util.Filter;
 import org.powerbot.game.api.util.SkillData;
 import org.powerbot.game.api.util.Time;
@@ -41,18 +44,18 @@ import java.util.ArrayList;
  */
 
 @Manifest(
-        authors                 = "NathanTehBeast",
-        name                    = "Nathan's AIO Miner",
-        description             = "Powermines ore in various locations. Actionbar Dropping. If your location doesn't work, take a screenshot and post in thread.",
-        topic                   = 1012215,
-        website                 = "http://www.powerbot.org/community/topic/1012215-free-nathans-aio-miner-powermining-actionbar-dropping/",
-        hidden                  = false,
-        vip                     = false,
-        instances               = 3,
-        version                 = 1.63
+        authors                     = "NathanTehBeast",
+        name                        = "Nathan's AIO Miner",
+        description                 = "Powermines ore in various locations. Actionbar Dropping. If your location doesn't work, take a screenshot and post in thread.",
+        topic                       = 1012215,
+        website                     = "http://www.powerbot.org/community/topic/1012215-free-nathans-aio-miner-powermining-actionbar-dropping/",
+        hidden                      = false,
+        vip                         = false,
+        instances                   = 3,
+        version                     = 1.64
 )
 
-public final class Main extends ActiveScript implements MessageListener, PaintListener, MouseListener {
+public final class Main extends XScript implements MessageListener, Script, MouseListener {
 
     private static final Color gold = new Color(255, 215, 0);
     private static final Color goldT = new Color(255, 215, 0, 150);
@@ -87,86 +90,39 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     public static boolean debug = false;
 
     @Override
-    public void onStart() {
-        new Logger(new Font("Calibri", Font.PLAIN, 11));
-        Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf");
-        Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf");
-        Mouse.setSpeed(Mouse.Speed.VERY_FAST);
-        gui = new GUI();
-        Logger.log("You are using version " + version);
-    }
-
-    @Override
-    public int loop() {
+    protected boolean setup() {
         try {
-            if (Game.getClientState() != Game.INDEX_MAP_LOADED) {
-                return 1000;
-            }
-            if (client != Bot.client()) {
-                WidgetCache.purge();
-                Bot.context().getEventManager().addListener(this);
-                client = Bot.client();
-            }
-            for (Node node : nodes) {
-                if (node.activate()) {
-                    currentNode = node;
-                    node.execute();
-                }
-            }
-            if (gui != null && gui.isVisible() && Game.isLoggedIn()) {
-                startTile = Players.getLocal().getLocation();
-                showPaint = true;
-            }
-        } catch (Exception e) {
-            Logger.log("Timer plx fix internal errors");
-        }
-        return 600;
-    }
-
-    @Override
-    public void onStop() {
-        showPaint = true;
-        paintMouse = false;
-        sleep(100);
-        Logger.remove();
-        sleep(1000);
-        Utilities.savePaint(0, 388, 520, 140);
-        Logger.log("Thanks for using Nathan's AIO Miner!");
-    }
-
-    @Override
-    public void messageReceived(MessageEvent me) {
-        String msg = me.getId() != 2 ? me.getMessage().toLowerCase() : "";
-        if (msg.contains("manage to mine some") || msg.contains("armour allows you to mine an additional ore")) {
-            oresMined++;
-        }
-        if (msg.contains("manage to mine two")) {
-            oresMined+=2;
-        }
-        if (me.getMessage().toLowerCase().contains("cya nerds")) {
-            ActionBar.setExpanded(false);
-            Utilities.waitFor(new Condition() {
-                @Override
-                public boolean validate() {
-                    return !ActionBar.isExpanded();
-                }
-            }, 3000);
-            Keyboard.sendText("Bye!", true, 100, 200);
-            if (Players.getLocal().isInCombat()) {
-                Utilities.waitFor(new Condition() {
+            if (Environment.getDisplayName().toLowerCase().equals("nathantehbeast")) {
+                new Logger(new Font("Calibri", Font.PLAIN, 11));
+                getContainer().submit(new LoopTask() {
                     @Override
-                    public boolean validate() {
-                        return !Players.getLocal().isInCombat();
+                    public int loop() {
+                        Logger.updateTime();
+                        return 1000;
                     }
-                }, 30000);
+                });
             }
-            Game.logout(false);
-            stop();
+            Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf");
+            Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf");
+            Mouse.setSpeed(Mouse.Speed.VERY_FAST);
+            gui = new GUI();
+            Logger.log("You are using version " + version);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
     @Override
-    public void onRepaint(Graphics g) {
+    public void poll() {
+        if (gui != null && gui.isVisible() && Game.isLoggedIn()) {
+            startTile = Players.getLocal().getLocation();
+            showPaint = true;
+        }
+    }
+
+    @Override
+    public void paint(Graphics g) {
         long runTime = System.currentTimeMillis() - startTime;
         SceneObject[] ROCKS;
         Graphics2D g2d = (Graphics2D) g;
@@ -216,16 +172,27 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
             g2d.drawImage(paint, -2, 388, null);
             g2d.setFont(font1);
             g2d.setColor(white);
-            g2d.drawString(Skills.getRealLevel(Skills.MINING) +"(+"+sd.level(Skills.MINING)+")", 190, 443);
+            g2d.drawString(Skills.getRealLevel(Skills.MINING) + "(+" + sd.level(Skills.MINING) + ")", 190, 443);
             g2d.drawString(sd.experience(Skills.MINING) + " (" + sd.experience(SkillData.Rate.HOUR, Skills.MINING) + "/h)", 190, 457);
-            g2d.drawString(oresMined + " ("+oresHour+"/h)", 190, 470);
+            g2d.drawString(oresMined + " (" + oresHour + "/h)", 190, 470);
             g2d.drawString(Time.format(ttl), 190, 483);
             g2d.drawString(Time.format(System.currentTimeMillis() - startTime), 190, 496);
             g2d.setFont(font1_b);
             g2d.drawString("Script by NathanTehBeast", 359, 519);
             g2d.drawString("Paint by Maxmm", 6, 519);
-            g2d.drawString("v"+Main.class.getAnnotation(Manifest.class).version(), 319, 425);
+            g2d.drawString("v" + Main.class.getAnnotation(Manifest.class).version(), 319, 425);
         }
+    }
+
+    @Override
+    public void exit() {
+        showPaint = true;
+        paintMouse = false;
+        sleep(100);
+        Logger.remove();
+        sleep(1000);
+        Utilities.savePaint(0, 388, 520, 140);
+        Logger.log("Thanks for using Nathan's AIO Miner!");
     }
 
     public static boolean setOre(Ore o) {
@@ -236,7 +203,7 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
     public static boolean setStartTile() {
         try {
             startTile = Players.getLocal().getLocation();
-            Logger.log("Central tile set to "+startTile);
+            Logger.log("Central tile set to " + startTile);
         } catch (Exception e) {
             Logger.log("Error while setting central tile.");
             return false;
@@ -257,13 +224,6 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
         Logger.log("Initializing SkillData.");
     }
 
-    public static void provide(Node... n) {
-        for (Node node : n) {
-            Logger.log("Providing: "+node);
-            nodes.add(node);
-        }
-    }
-
     @Override
     public void mouseClicked(MouseEvent e) {
         final Rectangle area = new Rectangle(0, 388, 520, 140);
@@ -274,21 +234,48 @@ public final class Main extends ActiveScript implements MessageListener, PaintLi
 
     @Override
     public void mousePressed(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void messageReceived(MessageEvent me) {
+        String msg = me.getId() != 2 ? me.getMessage().toLowerCase() : "";
+        if (msg.contains("manage to mine some") || msg.contains("armour allows you to mine an additional ore")) {
+            oresMined++;
+        }
+        if (msg.contains("manage to mine two")) {
+            oresMined += 2;
+        }
+        if (me.getMessage().toLowerCase().contains("cya nerds")) {
+            ActionBar.setExpanded(false);
+            Utilities.waitFor(new Condition() {
+                @Override
+                public boolean validate() {
+                    return !ActionBar.isExpanded();
+                }
+            }, 3000);
+            Keyboard.sendText("Bye!", true, 100, 200);
+            if (Players.getLocal().isInCombat()) {
+                Utilities.waitFor(new Condition() {
+                    @Override
+                    public boolean validate() {
+                        return !Players.getLocal().isInCombat();
+                    }
+                }, 30000);
+            }
+            Game.logout(false);
+            stop();
+        }
     }
 }

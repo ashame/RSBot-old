@@ -2,6 +2,7 @@ package org.nathantehbeast.scripts.aiominer;
 
 import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
+import org.nathantehbeast.scripts.aiominer.nodes.AintNobodyGotTimeFoDat;
 import org.nathantehbeast.scripts.aiominer.nodes.Drop;
 import org.nathantehbeast.scripts.aiominer.nodes.Mine;
 import org.powerbot.game.api.methods.interactive.Players;
@@ -151,5 +152,6 @@ public class GUI extends JFrame {
         if (powermine.isSelected()) {
             Main.provide(new Drop(powermine.isSelected(), (Ore) ore.getSelectedItem()));
         }
+        Main.provide(new AintNobodyGotTimeFoDat(Players.getLocal().getLocation()));
     }
 }

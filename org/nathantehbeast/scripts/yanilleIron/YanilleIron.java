@@ -11,6 +11,7 @@ import org.powerbot.core.event.listeners.MessageListener;
 import org.powerbot.core.event.listeners.PaintListener;
 import org.powerbot.core.randoms.SpinTickets;
 import org.powerbot.core.script.ActiveScript;
+import org.powerbot.core.script.job.LoopTask;
 import org.powerbot.core.script.job.Task;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.core.script.job.state.Tree;
@@ -144,7 +145,16 @@ public class YanilleIron extends ActiveScript implements MessageListener, PaintL
 
     @Override
     public void onStart() {
-        new Logger(new Font("Calibri", Font.PLAIN, 11));
+        if (Environment.getDisplayName().toLowerCase().equals("nathantehbeast")) {
+            new Logger(new Font("Calibri", Font.PLAIN, 11));
+            getContainer().submit(new LoopTask() {
+                @Override
+                public int loop() {
+                    Logger.updateTime();
+                    return 1000;
+                }
+            });
+        }
         WidgetCache.purge();
         client = Bot.client();
         while (Game.getClientState() != Game.INDEX_MAP_LOADED) {

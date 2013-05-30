@@ -83,7 +83,32 @@ public final class Utilities {
         }
     }
 
-    public static boolean savePaint(final int x, final int y, final int w, final int h) {
+    public static void openFile(final String path) {
+        try {
+            File file = new File(path);
+            Desktop desktop = null;
+            if (Desktop.isDesktopSupported()) {
+                desktop = Desktop.getDesktop();
+                desktop.open(file);
+            }
+        } catch (IOException e) {
+            Logger.log(e.toString());
+        }
+    }
+
+    public static void openFile(final File file) {
+        try {
+            Desktop desktop = null;
+            if (Desktop.isDesktopSupported()) {
+                desktop = Desktop.getDesktop();
+                desktop.open(file);
+            }
+        } catch (IOException e) {
+            Logger.log(e.toString());
+        }
+    }
+
+    public static File savePaint(final int x, final int y, final int w, final int h) {
         final File path = new File(Environment.getStorageDirectory().getPath(), Calc.longToDate(System.currentTimeMillis()) + ".png");
         final BufferedImage img = Environment.captureScreen().getSubimage(x, y, w, h);
         try {
@@ -91,9 +116,9 @@ public final class Utilities {
             Logger.log("Saved progress report to "+path.getPath());
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
-        return true;
+        return path;
     }
 
     public static boolean depositAllExcept(final int... ids) {

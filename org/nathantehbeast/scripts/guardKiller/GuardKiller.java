@@ -8,10 +8,12 @@ import org.nathantehbeast.scripts.guardKiller.Nodes.*;
 import org.powerbot.core.Bot;
 import org.powerbot.core.event.listeners.PaintListener;
 import org.powerbot.core.script.ActiveScript;
+import org.powerbot.core.script.job.LoopTask;
 import org.powerbot.core.script.job.state.Branch;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.core.script.job.state.Tree;
 import org.powerbot.game.api.Manifest;
+import org.powerbot.game.api.methods.Environment;
 import org.powerbot.game.api.methods.Game;
 import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.input.Mouse;
@@ -96,6 +98,16 @@ public class GuardKiller extends ActiveScript implements PaintListener {
 
     @Override
     public void onStart() {
+        if (Environment.getDisplayName().toLowerCase().equals("nathantehbeast")) {
+            new Logger(new Font("Calibri", Font.PLAIN, 11));
+            getContainer().submit(new LoopTask() {
+                @Override
+                public int loop() {
+                    Logger.updateTime();
+                    return 1000;
+                }
+            });
+        }
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

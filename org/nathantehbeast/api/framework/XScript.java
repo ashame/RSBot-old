@@ -23,12 +23,12 @@ import java.util.List;
 
 public abstract class XScript extends ActiveScript implements PaintListener {
 
-    private final List<XNode> container = Collections.synchronizedList(new ArrayList<XNode>());
+    private static final List<XNode> container = Collections.synchronizedList(new ArrayList<XNode>());
     private Client client;
     public XNode currentNode;
-    public int delay;
+    public int delay = 600;
 
-    public synchronized final void provide(final XNode... nodes) {
+    public static synchronized final void provide(final XNode... nodes) {
         if (nodes != null ) {
             for (XNode node : nodes) {
                 if (!container.contains(node)) {
@@ -39,7 +39,7 @@ public abstract class XScript extends ActiveScript implements PaintListener {
         }
     }
 
-    public synchronized final void revoke(final XNode... nodes) {
+    public static synchronized final void revoke(final XNode... nodes) {
         if (nodes != null) {
             for (XNode node : nodes) {
                 if (container.contains(node)) {
@@ -82,7 +82,7 @@ public abstract class XScript extends ActiveScript implements PaintListener {
             }
             poll();
         } catch (Exception e) {
-            Logger.log("Timer pls fix internal errors");
+            System.out.println("Timer pls fix internal errors");
         }
         return delay;
     }

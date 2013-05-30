@@ -1,11 +1,11 @@
 package org.nathantehbeast.scripts.aiominer.nodes;
 
 import org.nathantehbeast.api.framework.Condition;
+import org.nathantehbeast.api.framework.XNode;
 import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.MCamera;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
-import org.powerbot.core.script.job.state.Node;
 import org.powerbot.core.script.methods.Players;
 import org.powerbot.game.api.methods.node.SceneEntities;
 import org.powerbot.game.api.methods.tab.Inventory;
@@ -22,13 +22,12 @@ import org.powerbot.game.api.wrappers.node.SceneObject;
  * To change this template use File | Settings | File Templates.
  */
 
-public final class Mine extends Node {
+public final class Mine implements XNode {
 
     private Ore ore;
     private Tile center;
     private int radius;
     private static SceneObject rock;
-    private static SceneObject previousRock;
 
     /**
      * @param ore    Constants.Ore to mine within the radius
