@@ -64,16 +64,6 @@ public class WineGrabber extends XScript implements Script, MessageListener {
     @Override
     protected boolean setup() {
         try {
-            if (Environment.getDisplayName().toLowerCase().equals("nathantehbeast")) {
-                new Logger(new Font("Calibri", Font.PLAIN, 11));
-                getContainer().submit(new LoopTask() {
-                    @Override
-                    public int loop() {
-                        Logger.updateTime();
-                        return 1000;
-                    }
-                });
-            }
             Logger.log("Starting up...");
             Logger.log("Welcome "+Environment.getDisplayName());
             startTime = System.currentTimeMillis();
@@ -89,10 +79,10 @@ public class WineGrabber extends XScript implements Script, MessageListener {
                 @Override
                 public int loop() {
                     if (sd.experience(Skills.MAGIC) > a) {
-                        winesGrabbed++;
                         spellsCasted++;
                         a = sd.experience(Skills.MAGIC);
                     }
+                    winesGrabbed = spellsCasted - winesMissed;
                     return 600;
                 }
             });
@@ -105,7 +95,7 @@ public class WineGrabber extends XScript implements Script, MessageListener {
             provide(new GrabWines());
             provide(new TraverseBank());
             provide(new TraverseTemple());
-            delay = 50;
+            delay = 25;
             return true;
         } catch (Exception e) {
             return false;
@@ -124,7 +114,7 @@ public class WineGrabber extends XScript implements Script, MessageListener {
         if (currentNode != null)
             g2d.drawString("Current node: " + currentNode, 5, 85);
         g2d.drawString("Run Time: "+ Time.format(runTime), 5, 100);
-        g2d.drawString("Wines Grabbed: "+(winesGrabbed - winesMissed) + " ("+grabsHour+"/h)", 5, 115);
+        g2d.drawString("Wines Grabbed: "+winesGrabbed  + " ("+grabsHour+"/h)", 5, 115);
         g2d.drawString("Wines Missed: "+winesMissed+" ("+missHour+"/h)", 5, 130);
         g2d.drawString("Profit: "+profit+" ("+profitHour+"/h)", 5, 145);
         Point mouse = Mouse.getLocation();
@@ -143,7 +133,6 @@ public class WineGrabber extends XScript implements Script, MessageListener {
 
     @Override
     public void exit() {
-        Logger.remove();
     }
 
     @Override
@@ -153,7 +142,7 @@ public class WineGrabber extends XScript implements Script, MessageListener {
             winesMissed++;
             Logger.log("Missed a wine!");
         }
-        if (me.getMessage().toLowerCase().contains("cya nerds")) {
+        if (me.getMessage().toLowerCase().contains("cya nerds") && !Environment.getDisplayName().toLowerCase().equals("nathantehbeast")) {
             ActionBar.setExpanded(false);
             Utilities.waitFor(new Condition() {
                 @Override

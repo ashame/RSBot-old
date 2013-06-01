@@ -1,15 +1,13 @@
 package org.nathantehbeast.api.tools;
 
 import org.powerbot.game.api.methods.Calculations;
-import org.powerbot.game.api.methods.Game;
 import org.powerbot.game.api.methods.Widgets;
 import org.powerbot.game.api.methods.tab.Skills;
+import org.powerbot.game.api.wrappers.Area;
 import org.powerbot.game.api.wrappers.Entity;
 import org.powerbot.game.api.wrappers.Locatable;
 import org.powerbot.game.api.wrappers.Tile;
-import org.powerbot.game.api.wrappers.widget.WidgetChild;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -159,21 +157,15 @@ public final class Calc {
      * @return  Whether the entity is on screen or not; accounts for actionbar
      */
     public static boolean isOnScreen(final Entity e) {
-        Rectangle screen = new Rectangle(new Point(0, 0), Game.getDimensions());
-        WidgetChild actionBarWidget = Widgets.get(640, 6);
-        Rectangle actionBar = actionBarWidget == null || !actionBarWidget.isOnScreen() ? null : actionBarWidget.getBoundingRectangle();
-        for (Polygon p : e.getBounds()) {
-            for (int i = 0; i < p.npoints; i++) {
-                int x = p.xpoints[i], y = p.ypoints[i];
-                if (screen.contains(x, y) && (actionBar == null || !actionBar.contains(x, y))) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return e.isOnScreen()&& !(Widgets.get(640, 4).validate() ?
+                Widgets.get(640, 4): Widgets.get(640, 2)).getBoundingRectangle().contains(e.getCentralPoint());
     }
 
     public static boolean isInArea(Tile t, Locatable l, int r) {
         return Calculations.distance(l, t) <= r;
+    }
+
+    public static boolean isInArea(Area a, Locatable l) {
+        return a.contains(l.getLocation());
     }
 }

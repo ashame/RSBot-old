@@ -19,12 +19,12 @@ import org.powerbot.game.api.wrappers.interactive.Player;
  * Time: 10:57 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AintNobodyGotTimeFoDat implements XNode {
+public class EscapeCombat implements XNode {
 
     private Tile startTile;
     private Player player;
 
-    public AintNobodyGotTimeFoDat(final Tile startTile) {
+    public EscapeCombat(final Tile startTile) {
         this.startTile = startTile;
     }
 

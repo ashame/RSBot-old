@@ -12,7 +12,6 @@ import org.powerbot.core.script.Script;
 import org.powerbot.core.script.job.LoopTask;
 import org.powerbot.core.script.methods.Game;
 import org.powerbot.game.api.Manifest;
-import org.powerbot.game.api.methods.Environment;
 import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.input.Mouse;
 import org.powerbot.game.api.methods.tab.Skills;
@@ -76,16 +75,6 @@ public class Crafter extends XScript implements Script, MouseListener {
             while (Game.getClientState() != Game.INDEX_MAP_LOADED) {
                 sleep(600);
             }
-            if (Environment.getDisplayName().toLowerCase().equals("nathantehbeast")) {
-                new Logger(new Font("Calibri", Font.PLAIN, 11));
-                getContainer().submit(new LoopTask() {
-                    @Override
-                    public int loop() {
-                        Logger.updateTime();
-                        return 1000;
-                    }
-                });
-            }
             Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf");
             priceMap = Calc.getPrice(Constants.GOLD_ID, Constants.BRACELET_ID);
             Mouse.setSpeed(Mouse.Speed.VERY_FAST);
@@ -132,7 +121,6 @@ public class Crafter extends XScript implements Script, MouseListener {
 
     @Override
     public void exit() {
-        Logger.remove();
         showPaint = true;
         paintMouse = false;
         sleep(100);

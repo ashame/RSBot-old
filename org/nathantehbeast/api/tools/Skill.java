@@ -38,7 +38,8 @@ public enum Skill {
     HUNTER          (21, "Hunter", 103),
     CONSTRUCTION    (22, "Construction", 97),
     SUMMONING       (23, "Summoning", 109),
-    DUNGEONEERING   (24, "Dungeoneering", 115);
+    DUNGEONEERING   (24, "Dungeoneering", 115),
+    TOTAL           (99, "Total", 999);
 
     private int id;
     private String name;
@@ -51,7 +52,11 @@ public enum Skill {
     }
 
     public static Skill[] getCombatSkills() {
-        return new Skill[] {ATTACK, DEFENSE, STRENGTH, CONSTITUTION, RANGE, MAGIC, PRAYER, SUMMONING};
+        return new Skill[] {ATTACK, DEFENSE, STRENGTH, CONSTITUTION, RANGE, MAGIC, PRAYER, SUMMONING, TOTAL};
+    }
+
+    public static Skill[] getFightingSkills() {
+        return new Skill[] {ATTACK, DEFENSE, STRENGTH, CONSTITUTION, RANGE, MAGIC, TOTAL};
     }
 
     public static Skill[] getGatheringSkills() {

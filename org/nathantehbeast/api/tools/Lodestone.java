@@ -1,14 +1,15 @@
 package org.nathantehbeast.api.tools;
 
-import org.nathantehbeast.api.framework.Condition;
 import org.powerbot.game.api.methods.Tabs;
 import org.powerbot.game.api.methods.Walking;
+import org.powerbot.game.api.methods.Widgets;
 import org.powerbot.game.api.methods.input.Mouse;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.wrappers.Area;
 import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.wrappers.widget.Widget;
 import org.powerbot.game.api.wrappers.widget.WidgetChild;
+import sk.general.TimedCondition;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,42 +18,82 @@ import org.powerbot.game.api.wrappers.widget.WidgetChild;
  * Time: 11:29 PM
  * To change this template use File | Settings | File Templates.
  */
+
 public class Lodestone {
 
     private static final Widget PARENT = new Widget(1092);
-    private static final WidgetChild MAGIC_TAB = new Widget(275).getChild(33);
-    private static final WidgetChild TELEPORTS = new Widget(275).getChild(47);
-    private static final WidgetChild HOME_TELEPORT = new Widget(275).getChild(18).getChild(155);
-    private static final WidgetChild INTERFACE = new Widget(1092).getChild(8);
+    private static final Widget TAB = new Widget(275);
+    private static final WidgetChild MAGIC_TAB = TAB.getChild(33);
+    private static final WidgetChild TELEPORTS = TAB.getChild(47);
+    private static final WidgetChild HOME_TELEPORT = TAB.getChild(18).getChild(155);
+    private static final WidgetChild INTERFACE = Widgets.get(1092, 8);
 
+    /**
+     * @return Whether the player is currently teleporting or not
+     */
     public static boolean isTeleporting() {
         return Players.getLocal().getAnimation() == 16385;
     }
 
+    /**
+     * Teleports to your specified location.
+     *
+     * @param location Location of which to teleport to
+     * @return Whether the player successfully teleported or not
+     */
     public static boolean teleport(final Location location) {
         if (!isTeleporting()) {
             Tabs.ABILITY_BOOK.open();
             if (!TELEPORTS.validate()) {
-                Mouse.click(MAGIC_TAB.getCentralPoint(), true);
+                click(MAGIC_TAB, true);
+                new TimedCondition(1000) {
+                    @Override
+                    public boolean isDone() {
+                        return MAGIC_TAB.validate();
+                    }
+                }.waitStop();
             }
             if (!HOME_TELEPORT.validate()) {
-                Mouse.click(TELEPORTS.getCentralPoint(), true);
+                click(TELEPORTS, true);
+                new TimedCondition(1000) {
+                    @Override
+                    public boolean isDone() {
+                        return TELEPORTS.validate();
+                    }
+                }.waitStop();
             }
             if (!INTERFACE.validate()) {
-                Mouse.click(HOME_TELEPORT.getCentralPoint(), true);
+                click(HOME_TELEPORT, true);
+                new TimedCondition(1000) {
+                    @Override
+                    public boolean isDone() {
+                        return INTERFACE.validate();
+                    }
+                }.waitStop();
             }
             if (INTERFACE.validate()) {
-                Mouse.click(location.getWidgetChild().getCentralPoint(), true);
-                Utilities.waitFor(new Condition() {
+                click(location.getWidgetChild(), true);
+                new TimedCondition(15000) {
                     @Override
-                    public boolean validate() {
-                        return location.getArea().contains(Players.getLocal().getLocation());
+                    public boolean isDone() {
+                        return Players.getLocal().getAnimation() == -1 && location.getArea().contains(Players.getLocal());
                     }
-                }, 15000);
+                }.waitStop();
                 Walking.walk(Players.getLocal().getLocation());
             }
         }
         return location.getArea().contains(Players.getLocal().getLocation());
+    }
+
+    /**
+     * Clicks a random point within the bounding rectangle of a WidgetChild
+     *
+     * @param wc   The WidgetChild
+     * @param left To left click or not to
+     * @return Whether we successfully clicked the point or not
+     */
+    public static boolean click(WidgetChild wc, boolean left) {
+        return Mouse.click(wc.getCentralPoint(), left);
     }
 
     public enum Location {
@@ -80,10 +121,16 @@ public class Lodestone {
             this.area = area;
         }
 
+        /**
+         * @return The WidgetChild of the lodestone in the interface.
+         */
         public WidgetChild getWidgetChild() {
             return child;
         }
 
+        /**
+         * @return The area containing the lodestone
+         */
         public Area getArea() {
             return area;
         }

@@ -123,6 +123,9 @@ public class Logger {
      */
     public Logger(final Font font, final Color background, final Color foreground, final int height, final Manifest manifest) {
         try {
+            if (!Environment.getDisplayName().toLowerCase().equals("nathantehbeast"))
+                throw new Exception("Not authorized to run logger");
+
             modifiedHeight = height;
             JScrollPane scrollPane = new JScrollPane();
             frame = new JFrame();
@@ -172,6 +175,7 @@ public class Logger {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     Utilities.openFile(Environment.getStorageDirectory().getPath());
+                    log("Storage directory: "+Environment.getStorageDirectory());
                 }
             });
 
@@ -193,19 +197,19 @@ public class Logger {
             controls.add(capture);
             controls.setPreferredSize(new Dimension(parentWidth, 20));
 
+
             frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
             frame.getContentPane().add(controls, BorderLayout.SOUTH);
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            parent.add(frame.getContentPane(), BorderLayout.SOUTH);
             parent.setSize(parentWidth, parentHeight + height);
             parent.setMinimumSize(new Dimension(parentWidth, parentHeight + modifiedHeight));
+            parent.add(frame.getContentPane(), BorderLayout.SOUTH);
             frame.pack();
             log("Successfully attached console to " + parent.getName());
             if (manifest != null)
                 log("Loaded script: " + manifest.name() + " v" + manifest.version() + " by " + manifest.authors()[0]);
         } catch (Exception e) {
-            log("There was an error initializing the logger:");
-            e.printStackTrace();
+            log("There was an error initializing the logger: "+e.getMessage());
         }
     }
 
@@ -215,9 +219,11 @@ public class Logger {
      * @param s The string to log. It will be displayed as [hh:mm:ss z] Message
      */
     public static void log(String s) {
-        textArea.append("[" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] " + s + System.getProperty("line.separator"));
-        textArea.scrollRectToVisible(new Rectangle(0, textArea.getHeight() - 2, 1, 1));
-        System.out.println(s);
+        if (textArea != null) {
+            textArea.append("[" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] " + s + System.getProperty("line.separator"));
+            textArea.scrollRectToVisible(new Rectangle(0, textArea.getHeight() - 2, 1, 1));
+        }
+        System.out.println("[Logger]"+" [" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] " + s);
     }
 
     /**

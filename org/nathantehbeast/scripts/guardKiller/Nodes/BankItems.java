@@ -1,4 +1,4 @@
-package org.nathantehbeast.scripts.aiominer.nodes;
+package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.framework.XNode;
 import org.nathantehbeast.api.tools.Logger;
@@ -8,59 +8,60 @@ import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.methods.widget.Bank;
 import org.powerbot.game.api.util.Filter;
 import org.powerbot.game.api.wrappers.Area;
+import org.powerbot.game.api.wrappers.Entity;
 import org.powerbot.game.api.wrappers.node.Item;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: Nathan
- * Date: 5/13/13
- * Time: 10:58 PM
+ * Date: 5/30/13
+ * Time: 11:06 PM
  * To change this template use File | Settings | File Templates.
  */
-public final class Banking implements XNode {
+public class BankItems implements XNode {
 
-    private Area bankArea;
-    private static final List<Integer> BANKLIST = Collections.synchronizedList(new ArrayList<Integer>());
+    private final int foodId;
+    private final Area bankArea;
+    private Entity banker;
+    private final List<Integer> BANKLIST = Collections.synchronizedList(new ArrayList<Integer>());
+    private final Filter<Item> BANK_FILTER;
 
-    final Filter<Item> FILTER = new Filter<Item>() {
-        @Override
-        public boolean accept(Item item) {
-            return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze");
-        }
-    };
-
-    public Banking(Area bankArea) {
+    public BankItems(final int foodId, final Area bankArea, final Filter<Item> bankFilter) {
+        this.foodId = foodId;
         this.bankArea = bankArea;
+        this.BANK_FILTER = bankFilter;
     }
 
     @Override
     public boolean activate() {
-        return Inventory.getItems(FILTER).length > 0 && bankArea.contains(Players.getLocal().getLocation());
+        return (banker = Bank.getNearest()) != null
+                && (Inventory.isFull() || (foodId > 0 && Inventory.getCount(foodId) == 0))
+                && bankArea.contains(Players.getLocal().getLocation());
     }
 
     @Override
     public void execute() {
         if (Bank.open()) {
             synchronized (BANKLIST) {
-                for (Item item : Inventory.getItems(FILTER)) {
-                    if (!BANKLIST.contains(item.getId())) {
-                        BANKLIST.add(item.getId());
-                        Logger.log("Added " + item.getId());
+                for (Item i : Inventory.getItems(BANK_FILTER)) {
+                    if (!BANKLIST.contains(i.getId())) {
+                        BANKLIST.add(i.getId());
+                        Logger.log("Added " + i.getId());
                     }
                 }
                 Logger.log("List: "+BANKLIST.toString());
-                for (final int i : BANKLIST) {
+                for (int i : BANKLIST) {
                     if (Bank.deposit(i, Bank.Amount.ALL)) {
                         Logger.log("Banking " + i);
-                        Task.sleep(300);
+                        Task.sleep(500);
                     }
                 }
                 BANKLIST.clear();
-                Logger.log("Cleared list");
             }
         }
     }

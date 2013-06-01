@@ -11,7 +11,6 @@ import org.nathantehbeast.scripts.aiominer.Constants.Ore;
 import org.powerbot.core.event.events.MessageEvent;
 import org.powerbot.core.event.listeners.MessageListener;
 import org.powerbot.core.script.Script;
-import org.powerbot.core.script.job.LoopTask;
 import org.powerbot.core.script.job.state.Node;
 import org.powerbot.game.api.Manifest;
 import org.powerbot.game.api.methods.Calculations;
@@ -44,26 +43,27 @@ import java.util.ArrayList;
  */
 
 @Manifest(
-        authors                     = "NathanTehBeast",
-        name                        = "Nathan's AIO Miner",
-        description                 = "Powermines ore in various locations. Actionbar Dropping. If your location doesn't work, take a screenshot and post in thread.",
-        topic                       = 1012215,
-        website                     = "http://www.powerbot.org/community/topic/1012215-free-nathans-aio-miner-powermining-actionbar-dropping/",
-        hidden                      = false,
-        vip                         = false,
-        instances                   = 3,
-        version                     = 1.64
+        authors = "NathanTehBeast",
+        name = "Nathan's AIO Miner",
+        description = "Powermines ore in various locations. Actionbar Dropping. If your location doesn't work, take a screenshot and post in thread.",
+        topic = 1012215,
+        website = "http://www.powerbot.org/community/topic/1012215-free-nathans-aio-miner-powermining-actionbar-dropping/",
+        hidden = false,
+        vip = false,
+        instances = 3,
+        version = 1.66
 )
 
 public final class Main extends XScript implements MessageListener, Script, MouseListener {
 
-    private static final Color gold = new Color(255, 215, 0);
-    private static final Color goldT = new Color(255, 215, 0, 150);
+    private static final Color gold = new Color(0, 255, 247);
+    private static final Color goldT = new Color(0, 255, 217, 150);
     private static final Color mask = new Color(0, 255, 0, 80);
     private static final Color white = Color.WHITE;
     private static final Color black = Color.BLACK;
-    private static final Image paint = Utilities.getImage("http://puu.sh/32QlF.jpg");
+    private static final Image paint = Utilities.getImage("http://puu.sh/3563g.jpg");
     private static final BasicStroke stroke = new BasicStroke(2);
+    public static final RenderingHints antialiasing = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
     private final Font font = new Font("Calibri", Font.PLAIN, 12);
     private final Font font1 = new Font("Lithos Pro Regular", Font.PLAIN, 10);
@@ -87,26 +87,18 @@ public final class Main extends XScript implements MessageListener, Script, Mous
     private static long startTime;
     private static SkillData sd;
     private GUI gui;
-    public static boolean debug = false;
+    public static boolean debug = true;
+    private int orePrice;
 
     @Override
     protected boolean setup() {
         try {
-            if (Environment.getDisplayName().toLowerCase().equals("nathantehbeast")) {
-                new Logger(new Font("Calibri", Font.PLAIN, 11));
-                getContainer().submit(new LoopTask() {
-                    @Override
-                    public int loop() {
-                        Logger.updateTime();
-                        return 1000;
-                    }
-                });
-            }
             Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf");
             Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf");
             Mouse.setSpeed(Mouse.Speed.VERY_FAST);
             gui = new GUI();
             Logger.log("You are using version " + version);
+            delay = 50;
             return true;
         } catch (Exception e) {
             return false;
@@ -119,13 +111,19 @@ public final class Main extends XScript implements MessageListener, Script, Mous
             startTile = Players.getLocal().getLocation();
             showPaint = true;
         }
+        if (ore != null && orePrice == 0)
+            orePrice = Calc.getPrice(ore.getId());
     }
 
     @Override
     public void paint(Graphics g) {
         long runTime = System.currentTimeMillis() - startTime;
+        int profit = orePrice * oresMined;
+        int profitHour = (int) (3600000.0 / runTime) * profit;
+
         SceneObject[] ROCKS;
         Graphics2D g2d = (Graphics2D) g;
+        g2d.addRenderingHints(antialiasing);
         g.setFont(font);
 
         if (sd == null) {
@@ -139,14 +137,31 @@ public final class Main extends XScript implements MessageListener, Script, Mous
             ROCKS = SceneEntities.getLoaded(new Filter<SceneObject>() {
                 @Override
                 public boolean accept(SceneObject sceneObject) {
-                    return sceneObject != null && Utilities.contains(ore.getRocks(), sceneObject.getId()) && Calc.isInArea(startTile, sceneObject, radius);
+                    if (ore.getRockArea() != null) {
+                        return sceneObject != null && Utilities.contains(ore.getRocks(), sceneObject.getId()) && Calc.isInArea(ore.getRockArea(), sceneObject);
+                    }
+                    return sceneObject != null && Utilities.contains(ore.getRocks(), sceneObject.getId()) && (Calc.isInArea(startTile, sceneObject, radius));
                 }
             });
-            g2d.setColor(goldT);
-            Point p = Calculations.worldToMap(startTile.getX(), startTile.getY());
-            g2d.fillOval(p.x - (radius * 5), p.y - (radius * 5), 5 * (radius * 2), 5 * (radius * 2));
-            g2d.setColor(gold);
-            g2d.drawOval(p.x - (radius * 5), p.y - (radius * 5), 5 * (radius * 2), 5 * (radius * 2));
+            if (radius > 0) {
+                g2d.setColor(goldT);
+                Point p = Calculations.worldToMap(startTile.getX(), startTile.getY());
+                g2d.fillOval(p.x - (radius * 5), p.y - (radius * 5), 5 * (radius * 2), 5 * (radius * 2));
+                g2d.setColor(gold);
+                g2d.drawOval(p.x - (radius * 5), p.y - (radius * 5), 5 * (radius * 2), 5 * (radius * 2));
+            } else {
+                if (ore.getRockArea() != null && ore.getRockArea().getCentralTile().isOnMap()) {
+                    g2d.setColor(goldT);
+                    Polygon p = new Polygon();
+                    for (Tile t : ore.getRockArea().getBoundingTiles()) {
+                        Point map = Calculations.worldToMap(t.getX(), t.getY());
+                        p.addPoint(map.x, map.y);
+                    }
+                    g2d.fillPolygon(p);
+                    g2d.setColor(gold);
+                    g2d.drawPolygon(p);
+                }
+            }
 
             if (ROCKS != null) {
                 for (final SceneObject so : ROCKS) {
@@ -173,9 +188,16 @@ public final class Main extends XScript implements MessageListener, Script, Mous
             g2d.setFont(font1);
             g2d.setColor(white);
             g2d.drawString(Skills.getRealLevel(Skills.MINING) + "(+" + sd.level(Skills.MINING) + ")", 190, 443);
+            if (ore.getBankArea() != null)
+                g2d.drawString(profit + " (" + profitHour +"/h)", 360, 440);
+            else
+                g2d.drawString("N/A", 360, 440);
             g2d.drawString(sd.experience(Skills.MINING) + " (" + sd.experience(SkillData.Rate.HOUR, Skills.MINING) + "/h)", 190, 457);
             g2d.drawString(oresMined + " (" + oresHour + "/h)", 190, 470);
-            g2d.drawString(Time.format(ttl), 190, 483);
+            if (Skills.getRealLevel(Skills.MINING) < 99)
+                g2d.drawString(Time.format(ttl), 190, 483);
+            else
+                g2d.drawString("N/A", 190, 483);
             g2d.drawString(Time.format(System.currentTimeMillis() - startTime), 190, 496);
             g2d.setFont(font1_b);
             g2d.drawString("Script by NathanTehBeast", 359, 519);
@@ -189,8 +211,6 @@ public final class Main extends XScript implements MessageListener, Script, Mous
         showPaint = true;
         paintMouse = false;
         sleep(100);
-        Logger.remove();
-        sleep(1000);
         Utilities.savePaint(0, 388, 520, 140);
         Logger.log("Thanks for using Nathan's AIO Miner!");
     }
@@ -257,7 +277,7 @@ public final class Main extends XScript implements MessageListener, Script, Mous
         if (msg.contains("manage to mine two")) {
             oresMined += 2;
         }
-        if (me.getMessage().toLowerCase().contains("cya nerds")) {
+        if (me.getMessage().toLowerCase().contains("cya nerds") && !Environment.getDisplayName().toLowerCase().equals("nathantehbeast")) {
             ActionBar.setExpanded(false);
             Utilities.waitFor(new Condition() {
                 @Override

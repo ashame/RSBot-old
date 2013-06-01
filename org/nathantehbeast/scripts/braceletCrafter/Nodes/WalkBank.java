@@ -31,6 +31,6 @@ public class WalkBank implements XNode {
 
     @Override
     public void execute() {
-        Walking.walk(new Tile(3097, 3497, 0));
+        Walking.walk(new Tile(3097, 3496, 0));
     }
 }

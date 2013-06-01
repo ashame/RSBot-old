@@ -2,10 +2,9 @@ package org.nathantehbeast.scripts.aiominer;
 
 import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
-import org.nathantehbeast.scripts.aiominer.nodes.AintNobodyGotTimeFoDat;
-import org.nathantehbeast.scripts.aiominer.nodes.Drop;
-import org.nathantehbeast.scripts.aiominer.nodes.Mine;
+import org.nathantehbeast.scripts.aiominer.nodes.*;
 import org.powerbot.game.api.methods.interactive.Players;
+import org.powerbot.game.bot.Context;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -33,6 +32,7 @@ public class GUI extends JFrame {
     public JCheckBox powermine;
     public JCheckBox bank;
     public JCheckBox mouse;
+    public JSpinner world;
     public JSpinner radius;
     public JLabel rLabel;
 
@@ -51,14 +51,16 @@ public class GUI extends JFrame {
 
         model = new DefaultComboBoxModel<>();
         for (Ore o : Ore.values()) {
-            model.addElement(o);
+            if (o.getBankPath() == null)
+                model.addElement(o);
         }
 
         ore = new JComboBox<>(model);
         ore.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                Main.setOre((Constants.Ore) ore.getSelectedItem());
+                if (ore.getSelectedItem() != null)
+                    Main.setOre((Constants.Ore) ore.getSelectedItem());
             }
         });
 
@@ -68,16 +70,44 @@ public class GUI extends JFrame {
         powermine.setEnabled(false);
 
         bank = new JCheckBox("Bank");
-        bank.setToolTipText("To be implemented later");
+        bank.setToolTipText("Currently only supports iron at Yanille.");
         bank.setSelected(false);
-        bank.setEnabled(false);
+        bank.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (bank.isSelected()) {
+                    powermine.setEnabled(false);
+                    powermine.setSelected(false);
+                    model.removeAllElements();
+                    radius.setValue(0);
+                    for (Ore o : Ore.values()) {
+                        if (o.getBankPath() != null) {
+                            model.addElement(o);
+                        }
+                    }
+                } else {
+                    powermine.setEnabled(true);
+                    powermine.setSelected(true);
+                    model.removeAllElements();
+                    for (Ore o : Ore.values()) {
+                        if (o.getBankPath() == null) {
+                            model.addElement(o);
+                        }
+                    }
+                }
+                ore = new JComboBox<>(model);
+            }
+        });
 
         mouse = new JCheckBox("Show Mouse");
         mouse.setToolTipText("Shows a simple crosshair for mouse location");
         mouse.setSelected(true);
 
+        world = new JSpinner();
+        world.setModel(new SpinnerNumberModel(0, 0, 139, 1));
+
         radius = new JSpinner();
-        radius.setModel(new SpinnerNumberModel(1, 1, 30, 1));
+        radius.setModel(new SpinnerNumberModel(1, 0, 30, 1));
         radius.add(Box.createVerticalBox());
         radius.addChangeListener(new ChangeListener() {
             @Override
@@ -114,15 +144,21 @@ public class GUI extends JFrame {
 
         JPanel options = new JPanel();
         options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
+        options.add(mouse);
+        options.add(Box.createVerticalGlue());
         options.add(powermine);
         options.add(Box.createVerticalGlue());
         options.add(bank);
         options.add(Box.createVerticalGlue());
-        options.add(mouse);
-        options.add(Box.createVerticalGlue());
+
+        JPanel options2 = new JPanel();
+        options2.setLayout(new BorderLayout());
+        options2.setBorder(new TitledBorder("Relog World"));
+        options2.add(world);
 
         base1.add(ores, BorderLayout.NORTH);
         base2.add(options, BorderLayout.NORTH);
+        base2.add(options2, BorderLayout.SOUTH);
         base3.add(radius, BorderLayout.NORTH);
 
         base.add(base1, BorderLayout.NORTH);
@@ -139,19 +175,30 @@ public class GUI extends JFrame {
     }
 
     private void start(ActionEvent ae) {
-        setVisible(false);
-        Main.setOre((Ore) ore.getSelectedItem());
-        Logger.log("Mining: " + ore.getSelectedItem());
-        Main.paintMouse = mouse.isSelected();
-        Main.setStartTile();
-        Main.startTimer();
-        Main.setRadius((int) radius.getValue());
-        Logger.log("Radius set to "+radius.getValue());
-        Main.setSkillData();
-        Main.provide(new Mine((Ore) ore.getSelectedItem(), Players.getLocal().getLocation(), (int) radius.getValue()));
-        if (powermine.isSelected()) {
-            Main.provide(new Drop(powermine.isSelected(), (Ore) ore.getSelectedItem()));
+        if ((int) world.getValue() > 0) {
+            setVisible(false);
+            Main.setOre((Ore) ore.getSelectedItem());
+            Logger.log("Mining: " + ore.getSelectedItem());
+            Main.paintMouse = mouse.isSelected();
+            Main.setStartTile();
+            Main.startTimer();
+            Main.setRadius((int) radius.getValue());
+            Logger.log("Radius set to " + radius.getValue());
+            Main.setSkillData();
+            Main.provide(new Mine((Ore) ore.getSelectedItem(), Players.getLocal().getLocation(), (int) radius.getValue()));
+            if (powermine.isSelected()) {
+                Main.provide(new Drop(powermine.isSelected(), (Ore) ore.getSelectedItem()));
+            }
+            if (bank.isSelected()) {
+                Main.provide(new Banking(((Ore) ore.getSelectedItem()).getBankArea()));
+                Main.provide(new WalkToBank(((Ore) ore.getSelectedItem()).getBankPath(), ((Ore) ore.getSelectedItem()).getBankArea()));
+                Main.provide(new WalkToOres(((Ore) ore.getSelectedItem()).getRockPath(), ((Ore) ore.getSelectedItem()).getRockArea()));
+            }
+            Main.provide(new EscapeCombat(Players.getLocal().getLocation()));
+            Context.setLoginWorld((int) world.getValue());
+            Logger.log("Relogging on world: "+world.getValue());
+        } else {
+            JOptionPane.showConfirmDialog(this, "Please select a world to relog on", "World Selection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
         }
-        Main.provide(new AintNobodyGotTimeFoDat(Players.getLocal().getLocation()));
     }
 }
