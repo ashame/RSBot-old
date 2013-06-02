@@ -49,6 +49,7 @@ public final class Constants {
             return npc != null
                     && (npc.getId() == 5919 || npc.getId() == 5920)
                     && !npc.isInCombat()
+                    && npc.getInteracting() == null
                     && CASTLE_AREA.contains(npc.getLocation());
         }
     };

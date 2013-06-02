@@ -35,7 +35,6 @@ public class GrabWines implements XNode {
 
     private SceneObject table;
     private GroundItem wine;
-    private Point point;
     private Tile hover = new Tile(2952, 3473, 0);
 
     @Override
@@ -49,7 +48,7 @@ public class GrabWines implements XNode {
             if (!Calc.isOnScreen(wine)) {
                 MCamera.turnTo(wine, 50);
             }
-            point = Calculations.groundToScreen((int) ((hover.getX() - Game.getBaseX() + 0.5D) * 512.0D), (int) ((hover.getY() - Game.getBaseY() + 0.5D) * 512.0D), 1, 500);
+            final Point point = Calculations.groundToScreen((int) ((hover.getX() - Game.getBaseX() + 0.5D) * 512.0D), (int) ((hover.getY() - Game.getBaseY() + 0.5D) * 512.0D), 1, 500);
             if (!Players.getLocal().isMoving() && Mouse.move(point)) {
                 if (Mouse.click(false)) {
                     if (Menu.select("Cast", "Wine of Zamorak")) {

@@ -37,16 +37,16 @@ import java.awt.*;
 
 @Manifest(
         authors = "nathantehbeast",
-        name = "Nathan's Wine Grabber",
-        description = "Grabs wines for profit. Put telegrab on actionbar slot 0. Start with a staff of air equipped, and law runes in inventory.",
-        version = 1.1,
-        vip = true,
-        instances = 2,
+        name = "Nathan's Wine Grabber [P]",
+        description = "Grabs wines for profit. Unlimited instances. Money making",
+        version = 1.0,
+        hidden = true,
+        instances = 0,
         topic = 1021905,
         website = "http://www.powerbot.org/community/topic/1021905-vip-f2p-nathans-wine-grabber/"
 )
 
-public class WineGrabber extends XScript implements Script, MessageListener {
+public class PrivateWineGrabber extends XScript implements Script, MessageListener {
 
     private SkillData sd;
     private int a;
