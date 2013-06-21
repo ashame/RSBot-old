@@ -1,9 +1,9 @@
 package org.nathantehbeast.api.tools;
 
 import org.powerbot.core.Bot;
-import org.powerbot.core.script.util.Random;
 import org.powerbot.game.api.methods.input.Mouse;
 import org.powerbot.game.api.methods.widget.Camera;
+import org.powerbot.game.api.util.Random;
 import org.powerbot.game.api.wrappers.Locatable;
 
 import java.awt.event.MouseEvent;
@@ -40,7 +40,7 @@ public class MCamera {
             if(pixelsTo > 450) pixelsTo = pixelsTo / 450 * 450;
             int startY = Random.nextInt(-85, 85) + 200;
             if (angleTo > degreesDeviation) {//right
-                int startX = (500 - pixelsTo) - Random.nextInt(0,500 - pixelsTo - 10);
+                int startX = (500 - pixelsTo) - Random.nextInt(0, 500 - pixelsTo - 10);
                 dragMouse(startX,startY,startX + pixelsTo,startY+Random.nextInt(-10,10));
             } else if (angleTo < -degreesDeviation) {//left
                 int startX = (pixelsTo + 10) + Random.nextInt(0,500 - pixelsTo + 10);

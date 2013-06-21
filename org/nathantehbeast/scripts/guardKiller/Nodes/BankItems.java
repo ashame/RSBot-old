@@ -1,7 +1,11 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.framework.XNode;
+import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.Logger;
+import org.nathantehbeast.api.tools.MCamera;
+import org.nathantehbeast.scripts.guardKiller.Constants;
+import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.Task;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.tab.Inventory;
@@ -9,6 +13,7 @@ import org.powerbot.game.api.methods.widget.Bank;
 import org.powerbot.game.api.util.Filter;
 import org.powerbot.game.api.wrappers.Area;
 import org.powerbot.game.api.wrappers.Entity;
+import org.powerbot.game.api.wrappers.Locatable;
 import org.powerbot.game.api.wrappers.node.Item;
 
 import java.util.ArrayList;
@@ -46,6 +51,8 @@ public class BankItems implements XNode {
 
     @Override
     public void execute() {
+        if (!Calc.isOnScreen(banker))
+            MCamera.turnTo((Locatable) banker, 50);
         if (Bank.open()) {
             synchronized (BANKLIST) {
                 for (Item i : Inventory.getItems(BANK_FILTER)) {
@@ -56,6 +63,9 @@ public class BankItems implements XNode {
                 }
                 Logger.log("List: "+BANKLIST.toString());
                 for (int i : BANKLIST) {
+                    if (i == Constants.GRAPE_ID) {
+                        GuardKiller.addGrape();
+                    }
                     if (Bank.deposit(i, Bank.Amount.ALL)) {
                         Logger.log("Banking " + i);
                         Task.sleep(500);

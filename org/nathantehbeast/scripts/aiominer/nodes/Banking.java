@@ -27,19 +27,21 @@ import java.util.List;
  */
 public final class Banking implements XNode {
 
-    private Area bankArea;
+    private final Area bankArea;
     private static final List<Integer> BANK_LIST = Collections.synchronizedList(new ArrayList<Integer>());
     private Entity bank;
+    private final boolean useUrns;
 
     final Filter<Item> FILTER = new Filter<Item>() {
         @Override
         public boolean accept(Item item) {
-            return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze");
+            return !item.getName().toLowerCase().contains("pickaxe") && !item.getName().toLowerCase().contains("adze") && !item.getName().toLowerCase().contains("mining urn");
         }
     };
 
-    public Banking(Area bankArea) {
+    public Banking(Area bankArea, final boolean useUrns) {
         this.bankArea = bankArea;
+        this.useUrns = useUrns;
     }
 
     @Override
@@ -51,7 +53,7 @@ public final class Banking implements XNode {
     public void execute() {
         if (!Calc.isOnScreen(bank)) {
             MCamera.turnTo((Locatable) bank, 50);
-            new TimedCondition(1500) {
+            new TimedCondition(3000) {
                 @Override
                 public boolean isDone() {
                     return Calc.isOnScreen(bank);
@@ -59,6 +61,12 @@ public final class Banking implements XNode {
             }.waitStop();
         }
         if (Bank.open()) {
+            new TimedCondition(5000) {
+                @Override
+                public boolean isDone() {
+                    return Bank.isOpen();
+                }
+            }.waitStop();
             synchronized (BANK_LIST) {
                 for (Item item : Inventory.getItems(FILTER)) {
                     if (!BANK_LIST.contains(item.getId())) {
@@ -70,7 +78,7 @@ public final class Banking implements XNode {
                 for (final int i : BANK_LIST) {
                     if (Bank.deposit(i, Bank.Amount.ALL)) {
                         Logger.log("Banking " + i);
-                        new TimedCondition(1500) {
+                        new TimedCondition(3000) {
                             @Override
                             public boolean isDone() {
                                 return !Inventory.contains(i);

@@ -1,10 +1,11 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.tools.Logger;
+import org.nathantehbeast.scripts.guardKiller.Constants;
 import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.LoopTask;
-import org.powerbot.core.script.methods.Players;
 import org.powerbot.game.api.methods.Widgets;
+import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.wrappers.widget.WidgetChild;
 import sk.action.Ability;
 import sk.action.ActionBar;
@@ -25,7 +26,7 @@ public class AbilityHandler extends LoopTask {
 
     @Override
     public int loop() {
-        if (GuardKiller.useAbilities && Players.getLocal().isInCombat() && Players.getLocal().getInteracting() != null) {
+        if (GuardKiller.useAbilities && Players.getLocal().getInteracting() != null && Constants.CASTLE_AREA.contains(Players.getLocal())) {
             if (!ActionBar.isExpanded()) {
                 ActionBar.setExpanded(true);
             }
@@ -61,7 +62,7 @@ public class AbilityHandler extends LoopTask {
         return 150;
     }
 
-    private final BookAbility getAbility(AbilityType type) {
+    private BookAbility getAbility(AbilityType type) {
         BookAbility ability = null;
         for (int i = 11; i >= 0; i--) {
             Ability a = ActionBar.getAbilityInSlot(i);
@@ -72,7 +73,7 @@ public class AbilityHandler extends LoopTask {
         return ability;
     }
 
-    private final int getAdrenaline() {
+    private int getAdrenaline() {
         return ActionBar.getAdrenaline() / 10;
     }
 }

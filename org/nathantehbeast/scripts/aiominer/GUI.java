@@ -1,7 +1,9 @@
 package org.nathantehbeast.scripts.aiominer;
 
 import org.nathantehbeast.api.tools.Logger;
+import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
+import org.nathantehbeast.scripts.aiominer.Constants.BankLocations;
 import org.nathantehbeast.scripts.aiominer.nodes.*;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.bot.Context;
@@ -28,15 +30,20 @@ public class GUI extends JFrame {
 
     public JButton startButton;
     public JComboBox ore;
+    public JComboBox banks;
     public DefaultComboBoxModel<Ore> model;
     public JCheckBox powermine;
     public JCheckBox bank;
     public JCheckBox mouse;
+    public JCheckBox urns;
     public JSpinner world;
     public JSpinner radius;
     public JLabel rLabel;
+    public DefaultComboBoxModel<BankLocations> bankModel;
 
     public GUI() {
+        Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf");
+        try {UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); } catch (Exception ignored) {}
         setTitle("Nathan's AIO Miner");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -51,18 +58,46 @@ public class GUI extends JFrame {
 
         model = new DefaultComboBoxModel<>();
         for (Ore o : Ore.values()) {
-            if (o.getBankPath() == null)
-                model.addElement(o);
+            model.addElement(o);
         }
 
         ore = new JComboBox<>(model);
         ore.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (ore.getSelectedItem() != null)
-                    Main.setOre((Constants.Ore) ore.getSelectedItem());
+                final Ore o = (Ore) ore.getSelectedItem();
+                if (o != null) {
+                    Main.setOre(o);
+                    if (o.getBanks() != null && o.getBanks().length > 0) {
+                        bankModel.removeAllElements();
+                        for (BankLocations b : o.getBanks()) {
+                            bankModel.addElement(b);
+                        }
+                        banks = new JComboBox<>(bankModel);
+                    }
+                    if (o.getBanks() == null) {
+                        bankModel.removeAllElements();
+                        bankModel.addElement(BankLocations.UNSUPPORTED);
+                        banks = new JComboBox<>(bankModel);
+                    }
+                }
             }
         });
+
+        bankModel = new DefaultComboBoxModel<>();
+        if (Ore.COPPER.getBanks() != null) {
+            bankModel.removeAllElements();
+            if (Ore.COPPER.getBanks().length < 1) {
+                bankModel.addElement(BankLocations.UNSUPPORTED);
+                return;
+            }
+            for (BankLocations b : Ore.COPPER.getBanks()) {
+                bankModel.addElement(b);
+            }
+        }
+
+        banks = new JComboBox<>(bankModel);
+
 
         powermine = new JCheckBox("Powermine");
         powermine.setToolTipText("Always keep this selected. Script only supports powermining ATM");
@@ -78,26 +113,20 @@ public class GUI extends JFrame {
                 if (bank.isSelected()) {
                     powermine.setEnabled(false);
                     powermine.setSelected(false);
-                    model.removeAllElements();
-                    radius.setValue(0);
-                    for (Ore o : Ore.values()) {
-                        if (o.getBankPath() != null) {
-                            model.addElement(o);
-                        }
-                    }
+                    //urns.setSelected(true);
+                    //urns.setEnabled(true);
                 } else {
                     powermine.setEnabled(true);
                     powermine.setSelected(true);
-                    model.removeAllElements();
-                    for (Ore o : Ore.values()) {
-                        if (o.getBankPath() == null) {
-                            model.addElement(o);
-                        }
-                    }
+                    //urns.setSelected(false);
+                    //urns.setEnabled(false);
                 }
-                ore = new JComboBox<>(model);
             }
         });
+
+        urns = new JCheckBox("Use Urns");
+        urns.setSelected(false);
+        urns.setEnabled(false);
 
         mouse = new JCheckBox("Show Mouse");
         mouse.setToolTipText("Shows a simple crosshair for mouse location");
@@ -108,6 +137,7 @@ public class GUI extends JFrame {
 
         radius = new JSpinner();
         radius.setModel(new SpinnerNumberModel(1, 0, 30, 1));
+        radius.setToolTipText("Defines the mining radius. If banking, leave this at 0 to use the default mining area, and anything else to specify your own radius.");
         radius.add(Box.createVerticalBox());
         radius.addChangeListener(new ChangeListener() {
             @Override
@@ -123,7 +153,7 @@ public class GUI extends JFrame {
 
         JPanel base1 = new JPanel();
         base1.setLayout(new BorderLayout());
-        base1.setBorder(new TitledBorder("Ore"));
+
 
         JPanel base2 = new JPanel();
         base2.setLayout(new BorderLayout());
@@ -138,9 +168,25 @@ public class GUI extends JFrame {
         title.setFont(new Font("Jokerman", Font.PLAIN, 13));
         title.setBorder(new EmptyBorder(2, 15, 0, 15));
 
+
+        JPanel bankx = new JPanel();
+        bankx.setLayout(new BorderLayout());
+        bankx.setBorder(new TitledBorder("Bank Location"));
+        bankx.add(banks);
+
+        JPanel ores2 = new JPanel();
+        ores2.setLayout(new BoxLayout(ores2, BoxLayout.Y_AXIS));
+        ores2.add(ore);
+
+        JPanel orebase = new JPanel();
+        orebase.setLayout(new BorderLayout());
+        orebase.setBorder(new TitledBorder("Ore"));
+        orebase.add(ores2, BorderLayout.NORTH);
+
         JPanel ores = new JPanel();
-        ores.setLayout(new BoxLayout(ores, BoxLayout.Y_AXIS));
-        ores.add(ore);
+        ores.setLayout(new BorderLayout());
+        ores.add(orebase, BorderLayout.NORTH);
+        ores.add(bankx, BorderLayout.SOUTH);
 
         JPanel options = new JPanel();
         options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
@@ -149,6 +195,8 @@ public class GUI extends JFrame {
         options.add(powermine);
         options.add(Box.createVerticalGlue());
         options.add(bank);
+        options.add(Box.createVerticalGlue());
+        options.add(urns);
         options.add(Box.createVerticalGlue());
 
         JPanel options2 = new JPanel();
@@ -185,18 +233,20 @@ public class GUI extends JFrame {
             Main.setRadius((int) radius.getValue());
             Logger.log("Radius set to " + radius.getValue());
             Main.setSkillData();
-            Main.provide(new Mine((Ore) ore.getSelectedItem(), Players.getLocal().getLocation(), (int) radius.getValue()));
+            Main.provide(new Mine((Ore) ore.getSelectedItem(), Players.getLocal().getLocation(), (int) radius.getValue(), bank.isSelected() ? (BankLocations) banks.getSelectedItem() : null));
             if (powermine.isSelected()) {
                 Main.provide(new Drop(powermine.isSelected(), (Ore) ore.getSelectedItem()));
             }
             if (bank.isSelected()) {
-                Main.provide(new Banking(((Ore) ore.getSelectedItem()).getBankArea()));
-                Main.provide(new WalkToBank(((Ore) ore.getSelectedItem()).getBankPath(), ((Ore) ore.getSelectedItem()).getBankArea()));
-                Main.provide(new WalkToOres(((Ore) ore.getSelectedItem()).getRockPath(), ((Ore) ore.getSelectedItem()).getRockArea()));
+                final BankLocations bankLocation = (BankLocations) banks.getSelectedItem();
+                Main.provide(new Banking(bankLocation.getBankArea(), urns.isSelected()));
+                Main.provide(new WalkToBank(bankLocation.getBankPath(), bankLocation.getBankArea()));
+                Main.provide(new WalkToOres(bankLocation.getRockPath(), bankLocation.getRockArea()));
+                Main.setBankLocation(bankLocation);
             }
             Main.provide(new EscapeCombat(Players.getLocal().getLocation()));
             Context.setLoginWorld((int) world.getValue());
-            Logger.log("Relogging on world: "+world.getValue());
+            Logger.log("Relogging on world: " + world.getValue());
         } else {
             JOptionPane.showConfirmDialog(this, "Please select a world to relog on", "World Selection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
         }

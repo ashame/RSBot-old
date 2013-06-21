@@ -1,7 +1,7 @@
 package org.nathantehbeast.scripts.guardKiller.Nodes;
 
 import org.nathantehbeast.api.framework.XNode;
-import org.powerbot.core.script.methods.Players;
+import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.wrappers.Area;
 import org.powerbot.game.api.wrappers.map.TilePath;

@@ -2,13 +2,13 @@ package org.nathantehbeast.api.tools;
 
 
 import org.nathantehbeast.api.framework.Condition;
-import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.methods.Environment;
 import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.widget.Bank;
 import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.Area;
+import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.wrappers.map.TilePath;
 
 import javax.imageio.ImageIO;
@@ -119,6 +119,10 @@ public final class Utilities {
             return null;
         }
         return path;
+    }
+
+    public static BufferedImage getPaint(final int x, final int y, final int w, final int h) {
+        return Environment.captureScreen().getSubimage(x, y, w, h);
     }
 
     public static boolean depositAllExcept(final int... ids) {

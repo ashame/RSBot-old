@@ -38,7 +38,7 @@ import java.awt.*;
 @Manifest(
         authors = "nathantehbeast",
         name = "Nathan's Wine Grabber",
-        description = "Grabs wines for profit. Put telegrab on actionbar slot 0. Start with a staff of air equipped, and law runes in inventory.",
+        description = "Grabs wines for profit. Put telegrab on actionbar slot 0. Start with a staff of air equipped, and law runes in inventory. Money Making.",
         version = 1.1,
         vip = true,
         instances = 2,
@@ -59,7 +59,7 @@ public class WineGrabber extends XScript implements Script, MessageListener {
     private long startTime;
     private static final Color black = Color.BLACK;
     private static final BasicStroke stroke = new BasicStroke(2);
-    private int world = Integer.parseInt(JOptionPane.showInputDialog(null, "Relog World", "Enter the number of the world to relog on.", JOptionPane.PLAIN_MESSAGE));
+    private static int world = Integer.parseInt(JOptionPane.showInputDialog(null, "Login on world:", "World Selection", JOptionPane.PLAIN_MESSAGE));
 
     @Override
     protected boolean setup() {
@@ -160,7 +160,7 @@ public class WineGrabber extends XScript implements Script, MessageListener {
                 }, 30000);
             }
             Game.logout(false);
-            stop();
+            shutdown();
         }
     }
 }

@@ -3,8 +3,8 @@ package org.nathantehbeast.scripts.guardKiller.Nodes;
 import org.nathantehbeast.api.framework.XNode;
 import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.MCamera;
-import org.nathantehbeast.scripts.guardKiller.GuardKiller;
 import org.powerbot.core.script.job.Task;
+import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.node.GroundItems;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.util.Filter;
@@ -43,7 +43,7 @@ public class Looting implements XNode {
 
     @Override
     public boolean activate() {
-        return (loot = GroundItems.getLoaded(lootFilter)) != null && (!Inventory.isFull() || (Inventory.isFull() && Inventory.contains(foodId)));
+        return (loot = GroundItems.getLoaded(lootFilter)) != null && Players.getLocal().getInteracting() == null && (!Inventory.isFull() || (Inventory.isFull() && Inventory.contains(foodId)));
     }
 
     @Override
@@ -66,7 +66,6 @@ public class Looting implements XNode {
                         return !i.validate();
                     }
                 }.waitStop();
-                GuardKiller.addGrape();
             }
         }
 

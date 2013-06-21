@@ -7,9 +7,10 @@ import org.nathantehbeast.api.tools.Skill;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.guardKiller.Nodes.AbilityHandler;
 import org.powerbot.core.script.Script;
-import org.powerbot.core.script.methods.Game;
 import org.powerbot.game.api.Manifest;
+import org.powerbot.game.api.methods.Game;
 import org.powerbot.game.api.methods.input.Mouse;
+import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.util.SkillData;
 import org.powerbot.game.api.util.Time;
 
@@ -28,7 +29,7 @@ import java.awt.*;
         authors                 = "nathantehbeast",
         name                    = "GuardKiller",
         description             = "Kills guards in Varrock for profit",
-        version                 = 2.0,
+        version                 = 2.1,
         topic                   = 934250,
         website                 = "http://www.powerbot.org/community/topic/934250-free-f2p-guardkiller-abilities-support-good-profit-on-sdn/"
 
@@ -89,7 +90,7 @@ public class GuardKiller extends XScript implements Script {
     }
 
     public static void addGrape() {
-        grapesLooted++;
+        grapesLooted+= Inventory.getCount(Constants.GRAPE_ID);
         Logger.log("Total grapes looted: " + grapesLooted);
     }
 }

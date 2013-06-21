@@ -1,13 +1,13 @@
 package org.nathantehbeast.scripts.aiominer;
 
 
-import org.nathantehbeast.api.framework.Condition;
 import org.nathantehbeast.api.framework.XScript;
 import org.nathantehbeast.api.tools.Calc;
 import org.nathantehbeast.api.tools.Logger;
 import org.nathantehbeast.api.tools.Skill;
 import org.nathantehbeast.api.tools.Utilities;
 import org.nathantehbeast.scripts.aiominer.Constants.Ore;
+import org.nathantehbeast.scripts.aiominer.Constants.BankLocations;
 import org.powerbot.core.event.events.MessageEvent;
 import org.powerbot.core.event.listeners.MessageListener;
 import org.powerbot.core.script.Script;
@@ -26,8 +26,8 @@ import org.powerbot.game.api.util.SkillData;
 import org.powerbot.game.api.util.Time;
 import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.wrappers.node.SceneObject;
-import org.powerbot.game.client.Client;
 import sk.action.ActionBar;
+import sk.general.TimedCondition;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -45,13 +45,13 @@ import java.util.ArrayList;
 @Manifest(
         authors = "NathanTehBeast",
         name = "Nathan's AIO Miner",
-        description = "Powermines ore in various locations. Actionbar Dropping. If your location doesn't work, take a screenshot and post in thread.",
+        description = "Mining. Powermines ore in various locations. Actionbar Dropping. If your location doesn't work, take a screenshot and post in thread.",
         topic = 1012215,
         website = "http://www.powerbot.org/community/topic/1012215-free-nathans-aio-miner-powermining-actionbar-dropping/",
         hidden = false,
         vip = false,
-        instances = 3,
-        version = 1.66
+        instances = 0,
+        version = 1.7
 )
 
 public final class Main extends XScript implements MessageListener, Script, MouseListener {
@@ -72,11 +72,9 @@ public final class Main extends XScript implements MessageListener, Script, Mous
     private volatile boolean showPaint = true;
     public static boolean paintMouse = true;
 
-    private static Ore ore = Ore.COPPER;
+    private static Ore ore;
 
     private final double version = getClass().getAnnotation(Manifest.class).version();
-
-    private Client client;
 
     private Node currentNode = null;
     private static ArrayList<Node> nodes = new ArrayList<>();
@@ -89,11 +87,13 @@ public final class Main extends XScript implements MessageListener, Script, Mous
     private GUI gui;
     public static boolean debug = true;
     private int orePrice;
+    private static BankLocations bankLocation = null;
+    private volatile long runTime;
+    private volatile int profit, profitHour;
 
     @Override
     protected boolean setup() {
         try {
-            Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/sz0p52rlowgwrid/Jokerman-Regular.ttf");
             Utilities.loadFont(Font.TRUETYPE_FONT, "http://dl.dropboxusercontent.com/s/i4y5ipsblbu64mv/LithosPro-Regular.ttf");
             Mouse.setSpeed(Mouse.Speed.VERY_FAST);
             gui = new GUI();
@@ -117,9 +117,9 @@ public final class Main extends XScript implements MessageListener, Script, Mous
 
     @Override
     public void paint(Graphics g) {
-        long runTime = System.currentTimeMillis() - startTime;
-        int profit = orePrice * oresMined;
-        int profitHour = (int) (3600000.0 / runTime) * profit;
+        runTime = System.currentTimeMillis() - startTime;
+        profit = orePrice * oresMined;
+        profitHour = (int) (3600000.0 / runTime) * profit;
 
         SceneObject[] ROCKS;
         Graphics2D g2d = (Graphics2D) g;
@@ -133,12 +133,12 @@ public final class Main extends XScript implements MessageListener, Script, Mous
             g2d.drawString("Current node: " + currentNode, 5, 100);
         }
 
-        if (startTile != null && showPaint) { //Paints radius + rocks
+        if (startTile != null && showPaint && ore != null) { //Paints radius + rocks
             ROCKS = SceneEntities.getLoaded(new Filter<SceneObject>() {
                 @Override
                 public boolean accept(SceneObject sceneObject) {
-                    if (ore.getRockArea() != null) {
-                        return sceneObject != null && Utilities.contains(ore.getRocks(), sceneObject.getId()) && Calc.isInArea(ore.getRockArea(), sceneObject);
+                    if (bankLocation != null) {
+                        return sceneObject != null && Utilities.contains(ore.getRocks(), sceneObject.getId()) && Calc.isInArea(bankLocation.getRockArea(), sceneObject);
                     }
                     return sceneObject != null && Utilities.contains(ore.getRocks(), sceneObject.getId()) && (Calc.isInArea(startTile, sceneObject, radius));
                 }
@@ -150,10 +150,10 @@ public final class Main extends XScript implements MessageListener, Script, Mous
                 g2d.setColor(gold);
                 g2d.drawOval(p.x - (radius * 5), p.y - (radius * 5), 5 * (radius * 2), 5 * (radius * 2));
             } else {
-                if (ore.getRockArea() != null && ore.getRockArea().getCentralTile().isOnMap()) {
+                if (bankLocation != null && bankLocation.getRockArea().getCentralTile().isOnMap()) {
                     g2d.setColor(goldT);
                     Polygon p = new Polygon();
-                    for (Tile t : ore.getRockArea().getBoundingTiles()) {
+                    for (Tile t : bankLocation.getRockArea().getBoundingTiles()) {
                         Point map = Calculations.worldToMap(t.getX(), t.getY());
                         p.addPoint(map.x, map.y);
                     }
@@ -188,8 +188,8 @@ public final class Main extends XScript implements MessageListener, Script, Mous
             g2d.setFont(font1);
             g2d.setColor(white);
             g2d.drawString(Skills.getRealLevel(Skills.MINING) + "(+" + sd.level(Skills.MINING) + ")", 190, 443);
-            if (ore.getBankArea() != null)
-                g2d.drawString(profit + " (" + profitHour +"/h)", 360, 440);
+            if (bankLocation != null)
+                g2d.drawString(profit + " (" + profitHour +"/h)", 360, 443);
             else
                 g2d.drawString("N/A", 360, 440);
             g2d.drawString(sd.experience(Skills.MINING) + " (" + sd.experience(SkillData.Rate.HOUR, Skills.MINING) + "/h)", 190, 457);
@@ -244,6 +244,10 @@ public final class Main extends XScript implements MessageListener, Script, Mous
         Logger.log("Initializing SkillData.");
     }
 
+    public static void setBankLocation(final BankLocations location) {
+        bankLocation = location;
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
         final Rectangle area = new Rectangle(0, 388, 520, 140);
@@ -279,23 +283,23 @@ public final class Main extends XScript implements MessageListener, Script, Mous
         }
         if (me.getMessage().toLowerCase().contains("cya nerds") && !Environment.getDisplayName().toLowerCase().equals("nathantehbeast")) {
             ActionBar.setExpanded(false);
-            Utilities.waitFor(new Condition() {
+            new TimedCondition(2500) {
                 @Override
-                public boolean validate() {
+                public boolean isDone() {
                     return !ActionBar.isExpanded();
                 }
-            }, 3000);
+            }.waitStop();
             Keyboard.sendText("Bye!", true, 100, 200);
             if (Players.getLocal().isInCombat()) {
-                Utilities.waitFor(new Condition() {
+                new TimedCondition(30000) {
                     @Override
-                    public boolean validate() {
+                    public boolean isDone() {
                         return !Players.getLocal().isInCombat();
                     }
-                }, 30000);
+                }.waitStop();
             }
             Game.logout(false);
-            stop();
+            shutdown();
         }
     }
 }

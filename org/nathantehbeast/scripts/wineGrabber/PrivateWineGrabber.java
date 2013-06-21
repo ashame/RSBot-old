@@ -160,7 +160,7 @@ public class PrivateWineGrabber extends XScript implements Script, MessageListen
                 }, 30000);
             }
             Game.logout(false);
-            stop();
+            shutdown();
         }
     }
 }

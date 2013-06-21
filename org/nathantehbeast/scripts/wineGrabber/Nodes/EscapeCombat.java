@@ -2,8 +2,8 @@ package org.nathantehbeast.scripts.wineGrabber.Nodes;
 
 import org.nathantehbeast.api.framework.XNode;
 import org.nathantehbeast.scripts.wineGrabber.Constants;
-import org.powerbot.core.script.methods.Players;
 import org.powerbot.game.api.methods.interactive.NPCs;
+import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.util.Filter;
 import org.powerbot.game.api.wrappers.interactive.NPC;
 

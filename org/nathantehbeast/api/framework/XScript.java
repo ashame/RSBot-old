@@ -5,8 +5,8 @@ import org.powerbot.core.Bot;
 import org.powerbot.core.event.listeners.PaintListener;
 import org.powerbot.core.script.ActiveScript;
 import org.powerbot.core.script.job.LoopTask;
-import org.powerbot.core.script.methods.Game;
 import org.powerbot.game.api.methods.Environment;
+import org.powerbot.game.api.methods.Game;
 import org.powerbot.game.api.methods.widget.WidgetCache;
 import org.powerbot.game.client.Client;
 
